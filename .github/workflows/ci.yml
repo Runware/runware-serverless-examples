@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+
+      # Each example is an independent project with its own model.py, so it is tested
+      # from inside its own directory, the way someone who cloned it would. One pytest
+      # run cannot hold two modules that share a name.
+      - name: Check every example has the shape every example has
+        run: python3 check_examples.py
+
+      - name: Test every example
+        run: |
+          failed=0
+          for example in */; do
+            [ -f "$example/model.py" ] || continue
+            echo "::group::$example"
+            (cd "$example" && uv run --no-project --with pytest --with runware-serverless pytest -q) || failed=1
+            echo "::endgroup::"
+          done
+          exit $failed
