@@ -1,8 +1,13 @@
-# `watermark`
+# An image in a handler
 
-Lays a mark over an image, which is the smallest honest reason to want real
-pixels in a handler. No weights, so the subject stays the way an image gets in
-and out.
+How an image reaches your code and how it leaves, which is the part every app
+that takes one has in common: an upscaler, an edit, a ControlNet pass.
+
+**The work here is a stand-in.** Laying a mark over an image is pixel arithmetic
+on the CPU, and nothing in `model.py` touches the GPU or loads a weight. You would
+not deploy this app: it is the smallest thing that needs a real image on both
+sides, so the subject can be the image and nothing else. Every app gets a GPU
+because `--gpu-type` is required to create one, and this example leaves it idle.
 
 ## What it teaches
 
