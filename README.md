@@ -27,6 +27,7 @@ is **installed by the platform**, so your app does not list it.
 | [`sdxl-base`](sdxl-base/) | A model with real weights on a real GPU: where the heavy imports go, how dependencies are declared, and why the weights need a volume |
 | [`typed-endpoints`](typed-endpoints/) | What a caller of your app is told: the handler's signature is the published contract, and a plain parameter publishes almost none of it |
 | [`watermark`](watermark/) | Real pixels in a handler: the annotation that decodes an image, where it works, and why it has nothing to say on the way out |
+| [`multi-gpu`](multi-gpu/) | A worker with more than one card: every rank runs the handler, the world is already up, and only rank 0 is answered |
 
 Each one's README carries its own deploy command and the calls for its own endpoints.
 
