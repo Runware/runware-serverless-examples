@@ -15,8 +15,8 @@ runware serverless deploy model.py --id echo --gpu-type l40s
 
 ## Calling it
 
-A handler answers on the app id and its own name, and the body is an envelope whose `payload`
-holds the handler's arguments.
+A handler answers on **the app id and its own name**, and the body is an envelope whose
+`payload` holds the handler's arguments.
 
 ```bash
 curl https://api.serverless.runware.ai/v1/apps/echo/invoke-sync/echo \

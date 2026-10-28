@@ -24,6 +24,7 @@ is **installed by the platform**, so your app does not list it.
 | --- | --- |
 | [`echo`](echo/) | The smallest app that works. No weights and no GPU work, so a failure in it is the platform rather than your model |
 | [`image-tools`](image-tools/) | One app whose endpoints take unrelated request shapes, and where the GPU choice actually lives |
+| [`sdxl-base`](sdxl-base/) | A model with real weights on a real GPU: where the heavy imports go, how dependencies are declared, and why the weights need a volume |
 
 Each one's README carries its own deploy command and the calls for its own endpoints.
 
@@ -75,8 +76,8 @@ See [Volumes](https://runware.ai/docs/serverless/volumes) and
 
 ## Adding one
 
-Drop in a directory with `model.py`, `test_model.py` and a `README.md`. The README is what
-makes the example usable without leaving the repository, so it carries the deploy command
+Drop in a directory with `model.py`, `test_model.py` and a `README.md`. The README is **what
+makes the example usable without leaving the repository**, so it carries the deploy command
 and a call for every endpoint.
 
 `python3 check_examples.py` refuses an example that is missing any of them, and CI runs it.

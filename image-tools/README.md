@@ -8,7 +8,7 @@ rather than in the file, which is why nothing in `model.py` names hardware or sc
 endpoints that genuinely need different GPUs are two apps.**
 
 Neither loads weights, and the pixels are a fixed 1x1 PNG standing in for the real thing, so
-this runs anywhere.
+**this runs anywhere**.
 
 ## Deploying it
 
