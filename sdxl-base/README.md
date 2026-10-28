@@ -64,7 +64,7 @@ already there.
 ## Testing it
 
 ```bash
-uv run --no-project --with pytest --with runware-serverless pytest -q
+uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q
 ```
 
 The tests run with neither torch nor diffusers installed, which is the same

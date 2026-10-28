@@ -28,7 +28,7 @@ jobs:
           for example in */; do
             [ -f "$example/model.py" ] || continue
             echo "::group::$example"
-            (cd "$example" && uv run --no-project --with pytest --with runware-serverless pytest -q) || failed=1
+            (cd "$example" && uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q) || failed=1
             echo "::endgroup::"
           done
           exit $failed

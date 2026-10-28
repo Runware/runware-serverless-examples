@@ -38,7 +38,7 @@ curl https://api.serverless.runware.ai/v1/apps/echo/invoke-sync/reverse-message 
 ## Testing it
 
 ```bash
-uv run --no-project --with pytest --with runware-serverless pytest
+uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest
 ```
 
 `serve` and `endpoint` **hand the class and its methods back unchanged**, so this is tested

@@ -35,5 +35,5 @@ why each handler applies its default a second time.
 ## Testing it
 
 ```bash
-uv run --no-project --with pytest --with runware-serverless pytest
+uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest
 ```

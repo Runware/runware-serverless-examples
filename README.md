@@ -25,6 +25,8 @@ is **installed by the platform**, so your app does not list it.
 | [`echo`](echo/) | The smallest app that works. No weights and no GPU work, so a failure in it is the platform rather than your model |
 | [`image-tools`](image-tools/) | One app whose endpoints take unrelated request shapes, and where the GPU choice actually lives |
 | [`sdxl-base`](sdxl-base/) | A model with real weights on a real GPU: where the heavy imports go, how dependencies are declared, and why the weights need a volume |
+| [`typed-endpoints`](typed-endpoints/) | What a caller of your app is told: the handler's signature is the published contract, and a plain parameter publishes almost none of it |
+| [`watermark`](watermark/) | Real pixels in a handler: the annotation that decodes an image, where it works, and why it has nothing to say on the way out |
 
 Each one's README carries its own deploy command and the calls for its own endpoints.
 
@@ -36,7 +38,7 @@ Nothing to mock and no test client to stand up.
 
 ```bash
 cd echo
-uv run --no-project --with pytest --with runware-serverless pytest
+uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest
 ```
 
 Every example is tested in CI the same way, **from inside its own directory**, because
