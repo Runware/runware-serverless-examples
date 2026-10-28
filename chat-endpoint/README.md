@@ -1,39 +1,35 @@
 # Running a language model
 
-A language model behind an endpoint, and the shape of that endpoint is yours. No
-weights of the image kind, so what the example is about is the request.
+Chat completions from your own weights, with a request shape you decide.
 
-Qwen3 4B Instruct is Apache 2.0 and ungated, so this deploys with **no token of
-any kind**.
+Qwen3 4B Instruct is Apache 2.0 and ungated, so you deploy it with **no token**.
 
 ## What it teaches
 
 **A language model is weights and a handler.** Nothing about it is special to the
-platform: you load it in `load`, you keep it on a volume, and you answer requests
-from it. Everything `loading-weights` says applies unchanged.
+platform. You load it in `load`, you keep it on a volume, and you answer requests
+from it.
 
-**There is no standard chat endpoint here.** `messages`, `max_tokens` and
-`temperature` look familiar because this file wrote them that way. The platform
-publishes whatever your signature declares, so if you want an OpenAI-shaped body
-you write one, and if you want three fields of your own you write those. Nothing
-is translating between you and the caller.
+**You decide the request shape.** `messages`, `max_tokens` and `temperature` look
+familiar because this file wrote them that way, and the platform publishes whatever
+your signature declares. Want an OpenAI-shaped body, write one. Want three fields of
+your own, write those. Nothing translates between you and your caller.
 
-The roles publish as an enum, so a fourth role is refused at the boundary and
-never reaches your worker.
+The roles publish as an enum, so a fourth role is refused at the boundary and never
+reaches your worker.
 
-**The prompt template belongs to the model.** `apply_chat_template` reads the turn
-markers the tokenizer ships with, and those are not yours to guess at. A prompt
-assembled by hand is how an instruct model ends up answering nothing.
+**Use the model's own prompt template.** `apply_chat_template` reads the turn
+markers the tokenizer ships with, and you should not guess at those. Assemble the
+prompt by hand and an instruct model will answer you with nothing.
 
-**`generate` serves one request at a time.** There is no continuous batching here
-and no paged attention, so two callers queue behind each other for the whole
-length of a generation. That is fine for a single consumer or an internal tool and
-wrong for real traffic.
+**`generate` serves one request at a time.** You get no continuous batching and no
+paged attention, so two callers queue behind each other for the whole length of a
+generation. That is fine for a single consumer or an internal tool, and wrong for
+real traffic.
 
-A server built for that work, vLLM or its equivalents, brings **its own HTTP
-server**, which is a container deploy rather than this one. This example is the
-honest floor: the smallest thing that answers, and the place where you can see why
-you would move.
+A server built for that work brings **its own HTTP server**, which makes it a
+container deploy instead of this one. Start here, and move when you can see the
+queue.
 
 ## Deploying it
 

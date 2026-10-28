@@ -1,56 +1,56 @@
 # Taking an image as input
 
-How an image reaches your code and how it leaves. Every app that takes one has
-this in common, whether it upscales, edits or runs a ControlNet pass.
+How an image reaches your code and how it leaves, which every app that takes one
+has in common, whether it upscales, edits or runs a ControlNet pass.
 
-**The work here is a stand-in.** Laying a mark over an image is pixel arithmetic
-on the CPU, and nothing in `model.py` touches the GPU or loads a weight. You would
-not deploy this app: it is the smallest thing that needs a real image on both
-sides, so the subject can be the image and nothing else. Every app gets a GPU
-because `--gpu-type` is required to create one, and this example leaves it idle.
+**The work here is a stand-in.** Laying a mark over an image is pixel arithmetic on
+the CPU, and nothing in `model.py` touches the GPU or loads a weight. You would not
+deploy this app. It is the smallest thing that needs a real image on both sides, so
+the image can be the whole subject. Every app gets a GPU because `--gpu-type` is
+required to create one, and this example leaves it idle.
 
 ## What it teaches
 
-**The annotation is what decodes the image.** `Base64RGBImage` and
-`Base64RGBAImage` turn the base64 string a caller sent into a `PIL.Image` before
-the handler runs, so `layers.base` is already pixels. The field publishes itself
-as a described base64 string, so callers are told what to send:
+**The annotation decodes the image for you.** `Base64RGBImage` and
+`Base64RGBAImage` turn the base64 string your caller sent into a `PIL.Image` before
+your handler runs, so `layers.base` is already pixels. The field publishes itself as
+a described base64 string, so your callers know what to send:
 
 ```json
 { "type": "string", "format": "base64", "description": "Image in base64 format" }
 ```
 
-**They only work on a field of a model.** Coercion looks for a Pydantic model to
-validate the parameter against. These are images, not models, so a bare
-`def predict(self, image: Base64RGBImage)` is never coerced and your handler
-receives the string exactly as it arrived.
+**Put them on a field of a model, never on a parameter.** Coercion looks for a
+Pydantic model to validate the parameter against, and these are images, not models,
+so a bare `def predict(self, image: Base64RGBImage)` is never coerced and your
+handler gets the string exactly as it arrived.
 
-The published contract goes with it. Measured, the same annotation on a bare
-parameter and on a field:
+Your published contract goes with it. The same annotation, on a bare parameter and
+on a field:
 
-| | published | the handler gets |
+| | published | your handler gets |
 | --- | --- | --- |
 | `image: Base64RGBImage` | `{}` | `str` |
 | the same type on a field | a described base64 string | a `PIL.Image` |
 
-Nothing fails either way. One of them just answers a different question than the
-one it was asked, and tells callers nothing while it does it.
+Nothing fails either way. One of them just answers a different question than the one
+it was asked, and tells your callers nothing while it does it.
 
-**The names describe the conversion, not the result.** `Base64RGBImage` converts
-to RGB, so anything becomes three channels and `format` is gone with the
-conversion. `Base64RGBAImage` converts **nothing**: a grayscale PNG stays
-grayscale, and an image without an alpha channel does not gain one. It is the
-right choice for a mark whose transparency you want kept, and it is why this
-handler converts the mark itself before compositing.
+**The names describe the conversion, not the result.** `Base64RGBImage` converts to
+RGB, so anything becomes three channels and the `format` goes with the conversion.
+`Base64RGBAImage` converts **nothing**: a grayscale PNG stays grayscale, and an
+image with no alpha channel does not gain one. Reach for it when you want a mark's
+transparency kept, and convert the mark yourself, the way this handler does.
 
-**They are input-only.** On a response field they refuse to serialize and a
-placeholder goes out in their place, so `Stamped.image` is a plain string the
-handler encodes. The annotation has nothing to say about an image on the way out.
+**They have nothing to say on the way out.** Both refuse to serialize, so a response
+field annotated with one sends a placeholder instead of your image. That is why
+`Stamped.image` is a plain string the handler encodes. **Coercion is a request-side
+feature.**
 
-**The app declares Pillow.** The annotations need it at serving time, and pinning
-pinning it means your app behaves the same wherever it runs, whatever the runtime
-happens to carry. Nothing in `model.py` imports Pillow, because the only thing it does with
-the library is call methods on the images the annotations handed it.
+**The app declares Pillow.** The annotations need it at serving time, and pinning it
+means your app behaves the same wherever it runs. Nothing in `model.py` imports
+Pillow, because all it does with the library is call methods on the images the
+annotations handed it.
 
 ## Deploying it
 

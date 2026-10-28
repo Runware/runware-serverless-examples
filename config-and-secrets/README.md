@@ -1,47 +1,45 @@
 # Secrets and environment variables
 
-What a worker can see of its own configuration, and what it must never answer
-with. No weights, so the subject is the configuration itself.
+Configuration and credentials on a worker, and what you can read back about each.
 
 ## What it teaches
 
 **A secret and a plain variable arrive the same way.** Both land in `os.environ`,
-and nothing in the code can tell them apart. `API_TOKEN` here comes from a secret
-and `LOG_LEVEL` from `--env-var`, and `model.py` reads both with the same line.
+and your code cannot tell them apart. `API_TOKEN` comes from a secret here and
+`LOG_LEVEL` from `--env-var`, and `model.py` reads both with the same line.
 
-That is why **they share one namespace**. A plain variable whose name collides
-with an attached secret's injected name is rejected, and so is the reverse.
-Neither silently wins, and that is deliberate: a credential quietly overridden by
-a plain variable would slip past everyone.
+So **they share one namespace**. Name a plain variable the same as an attached
+secret's injected name and the platform rejects it, and the reverse too. Neither
+one silently wins, which is deliberate: a credential quietly overridden by a plain
+variable would slip past everyone.
 
-**The value must not leave the worker.** A handler that returned it would publish a
-credential to every caller and into the task record, where it outlives the request.
-The response here carries presence and nothing else, and a test asserts the value
-cannot appear in it.
+**Never return the value.** A handler that did would publish a credential to every
+caller and into the task record, where it outlives the request. The response here
+carries presence and nothing else, and a test asserts the value cannot appear in
+it.
 
-So an app cannot tell you whether a secret holds the *right* value. That is
-checked on the attachment, not from inside:
+That means your app cannot tell you whether a secret holds the *right* value. You
+check that on the attachment:
 
 ```
 apps env-vars list     CACHE_DIR = /weights      the value is printed
 attachments            DOCS_EXAMPLE_TOKEN -> API_TOKEN    only the names
 ```
 
-**That asymmetry is the practical difference.** A plain variable's value comes back
-from the API, a secret's never does, and an attachment is recorded as an audit
-event on the app.
+**That asymmetry is the practical difference.** You can read a plain variable's
+value back from the API and you can never read a secret's, and an attachment is
+recorded as an audit event on your app.
 
-**The configuration is read once, in `load`.** Changing a variable or an
-attachment records a new version and rolls the app, so the worker holding an old
-value is replaced by one that read the new set. A handler re-reading `os.environ`
-on every request is guarding against something that cannot happen.
+**Read your configuration once, in `load`.** Changing a variable or an attachment
+records a new version and rolls the app, so the worker holding the old value is
+replaced by one that read the new set. Re-reading `os.environ` on every request
+guards against something that cannot happen.
 
-**A secret's stored name need not be the name your code reads.** The attachment
-decides which stored secret fills a variable, so the same code runs against a
-production and a staging credential without an edit. This app always reads
-`API_TOKEN`.
+**The stored name need not be the name your code reads.** The attachment decides
+which stored secret fills a variable, so the same code runs against a production
+and a staging credential without an edit. This app always reads `API_TOKEN`.
 
-**Nothing is declared in `requirements`.** Pydantic is already on the worker,
+**Nothing is declared in `requirements`.** Pydantic is already on your worker,
 because the platform's own libraries bring it.
 
 ## Deploying it

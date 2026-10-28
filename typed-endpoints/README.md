@@ -1,17 +1,17 @@
 # Typed requests and responses
 
-What a caller of your app sees. The platform builds the per-app documentation out
-of your handler's signature, so the signature is the contract, and a handler
-written with plain parameters publishes almost nothing.
+What your callers see. The platform builds your app's documentation out of your
+handler signature, so that signature is your contract, and plain parameters
+publish almost none of it.
 
-The work here is deliberately small, reading an image's metadata, so the shape of
-the request and the response are the subject.
+The work here is small on purpose, reading an image's metadata, so the request and
+the response are the subject.
 
 ## What it teaches
 
-**The response schema is the return annotation.** Nothing else is read, so what
-you annotate is what callers are told. Measured by building the manifest for each
-of these:
+**Your return annotation is the response schema.** The build reads nothing else, so
+what you annotate is what your callers are told. Building the manifest for each of
+these gives:
 
 | `predict` returns | published response |
 | --- | --- |
@@ -19,40 +19,38 @@ of these:
 | a framework object, such as a pipeline output | `{}`, meaning anything at all |
 | a pydantic model | every field, with its type, its prose and its nesting |
 
-**A pydantic request model carries what a parameter cannot.** An optional
-parameter exports its type and nothing else. No default, and no description.
+**A pydantic request model carries what a parameter cannot.** An optional parameter
+exports its type and nothing else, so no default and no description.
 
-That is not only a documentation gap. The platform fills an omitted optional from
-the published schema, so a parameter whose default it never saw arrives as an
-explicit `null`, and the handler has to apply the default a second time:
+That costs you more than documentation. The platform fills an omitted optional from
+the published schema, so a parameter whose default it never saw reaches you as an
+explicit `null` and you apply the default a second time:
 
 ```python
 def generate(self, prompt: str, steps: int = 4) -> dict[str, object]:
     steps = 4 if steps is None else steps
 ```
 
-A field on a model publishes its default, which is then the one the platform
-sends. `palette` in this app arrives as `False`, and there is nothing to re-apply.
+Put it on a model field and the default is published, so the platform sends it.
+`palette` arrives here as `False` and you re-apply nothing.
 
-**Nested models and enums survive.** A model that holds another model publishes
-both, and an enum publishes its values, so `orientation` documents itself as one
-of three known strings, not as a string.
+**Nested models and enums survive.** A model holding another model publishes both,
+and an enum publishes its values, so `orientation` documents itself as one of three
+known strings instead of as a string.
 
-**`@serve(encode_response=...)` is the escape hatch, and it has a price.** It
-takes the handler results and returns whatever the app should answer, so a worker
-whose wire format cannot be its return type has a seam to use. What to know
-before reaching for it:
+**`@serve(encode_response=...)` is the escape hatch, and it costs you.** It takes
+your handler results and returns whatever the app should answer, so a worker whose
+wire format cannot be its return type has a seam to use. Know four things first:
 
-- The published response is still the return annotation, so an encoder that
-  reshapes the answer leaves the documentation describing something else.
+- Your published response is still the return annotation, so an encoder that
+  reshapes the answer leaves your documentation describing something else.
 - It receives a **list**, one entry per row. A single request is a batch of one.
-- It belongs to the app, not to an endpoint, so every endpoint answers through
-  the same encoder.
-- The function has to be defined **above** the class. A decorator's arguments are
-  evaluated when the class statement runs.
+- It belongs to your app, not to an endpoint, so every endpoint answers through the
+  same encoder.
+- Define the function **above** the class. A decorator's arguments run when the
+  class statement does.
 
-Returning a model instead avoids all four, which is why this example does not use
-it.
+Return a model instead and you avoid all four, which is why this example does.
 
 ## Deploying it
 

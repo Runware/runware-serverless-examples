@@ -1,38 +1,37 @@
 # Running a model with weights
 
-The first example here with real weights on a real GPU. `echo` and `image-tools`
-deliberately have neither, so this is the one that shows where the heavy parts of
-an app go.
+A text-to-image model on a GPU, with the weights on a volume so a restart does not
+fetch them again.
 
-Z-Image Turbo is Apache 2.0 and ungated, so this deploys with **no token of any
-kind**.
+Z-Image Turbo is Apache 2.0 and ungated, so you deploy it with **no token**.
 
 ## What it teaches
 
-**Heavy imports belong inside `load`.** The build imports this file to read the
-endpoints out of it, and it does that with the platform's own dependencies, not
-yours. An `import torch` at the top of the file fails the build before your model
-is ever reached. Inside `load` it runs in the worker, where torch exists.
+**Import your heavy dependencies inside `load`, not at the top of the file.** The
+build imports your file to find your endpoints, and it does that without your
+requirements installed, so a module-level `import torch` fails the build. Inside
+`load` it runs in the worker, where torch is there.
 
-`load` is also written to be safe to repeat. A load that runs out of memory is
-retried with a larger request, and the retry re-instantiates the class.
+**`load` is retried when the GPU is out of memory at startup**, waiting for a
+larger allocation each time. The retry re-instantiates your class, so both
+`__init__` and `load` have to be safe to run twice.
 
-**Dependencies are declared on the class.** The `requirements` list is what the
-build installs, and declaring it there keeps the list with the code that needs it.
+**List your dependencies in `requirements` on the class.** The build installs what
+you list, and keeping it next to the code means the next person reading your file
+finds it.
 
-Pin them, and pin them to something your GPU can run. An unpinned app that
-resolved last month and floats today stops working without anyone changing it, and
-a pin older than the card you deploy to fails at the first inference with `no
-kernel image is available for execution on the device`, because the wheel carries
-no kernels compiled for that architecture.
+**Pin the versions, and pin them to a release your GPU can run.** Leave them open
+and a version you never chose lands on your next build. Pin too far back and you
+get `no kernel image is available for execution on the device` at the first
+inference, because that wheel predates your card.
 
-**Weights belong on a volume.** The worker's filesystem is part of what a
-checkpoint captures, so weights left outside a volume are copied into every
-checkpoint and fetched again on every cold start. `--volume /weights` is what
-makes the second start fast.
+**Keep your weights on a volume.** A checkpoint captures the worker's filesystem,
+so anything you download outside a volume is copied into every checkpoint and
+fetched again on every cold start. Mount one with `--volume /weights` and your
+second start reads from it.
 
-**Nothing here names a GPU.** The hardware is set on the app, so the same file
-serves whatever you deployed it to.
+**Nothing in `model.py` names hardware.** You choose the GPU when you deploy, so
+the same file runs on whatever you give it.
 
 ## Deploying it
 

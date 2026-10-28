@@ -1,38 +1,39 @@
 # Using more than one GPU
 
-A worker with more than one card. The platform runs **one serving process per
-GPU**, so the interesting part is not the arithmetic, it is what each of those
-processes is expected to do.
+A worker across several cards. The platform runs **one serving process per GPU**,
+so what changes is not the arithmetic, it is what each of those processes has to
+do.
 
 No weights, so a failure here is the world coming up, not a model.
 
 ## What it teaches
 
 **Every rank runs your handler, with the same request.** Only rank 0 is reachable
-from outside the sandbox. It copies each invocation to its siblings and holds all
-of them at a barrier before any reaches your code. A collective inside a handler is safe for that reason, and it is also the constraint: **a rank that returns early
-hangs every rank that arrived at the collective it skipped.**
+from outside the sandbox, so it copies each invocation to its siblings and holds
+all of them at a barrier before any of them reaches your code. That is what makes
+a collective inside your handler safe.
 
-So a handler with a shortcut in it is the one thing to avoid. The split in this
-example gives the early ranks the remainder, and a rank whose share is empty still
-reaches the all-reduce.
+It is also the constraint. **A rank that returns early hangs every rank that
+arrived at the collective it skipped**, so never put a shortcut in a handler. The
+split here gives the remainder to the early ranks, and a rank whose share is empty
+still reaches the all-reduce.
 
 **The process group is already up.** `load` runs inside the platform's
-initialization, which sets this rank's device and calls
-`init_process_group("nccl")` before it, then waits on a barrier after. **A second
-`init_process_group` raises**, so `load` here only reads the world it was handed.
+initialization, which sets your rank's device and calls `init_process_group("nccl")`
+before it, then waits on a barrier after. A second `init_process_group` raises, so
+your `load` only reads the world it was handed.
 
-**Only rank 0's return value reaches the caller.** The siblings answer rank 0,
-which discards them. Nothing breaks if the ranks disagree, so a response that
-should carry every rank's contribution has to gather it, as `reduce` does.
+**Only rank 0's return value reaches your caller.** The siblings answer rank 0 and
+it discards them, and nothing breaks when the ranks disagree. If your response
+should carry every rank's work, gather it, the way `reduce` does.
 
-**Each rank works on its own card.** `torch.cuda.current_device()` is already this
-rank's, because the platform set it before `load`. Allocating with
-`device=self.device` is what keeps a rank off its siblings' memory, and it is why
-no single card has to hold the whole range.
+**Each rank works on its own card.** `torch.cuda.current_device()` is already your
+rank's, because the platform set it before `load`, so allocate with
+`device=self.device` and you keep off your siblings' memory. That is also why no
+single card has to hold the whole range.
 
-**Nothing in the file names a GPU count.** `--gpus-per-worker` does, and the same
-file serves a world of one.
+**Nothing in the file names a GPU count.** You set that with `--gpus-per-worker`,
+and the same file serves a world of one.
 
 ## Deploying it
 
@@ -95,9 +96,9 @@ Measured on two RTX PRO 6000:
 Two different partials, each summed on its own card, and a total that matches the
 same sum computed anywhere else.
 
-The first call is slow in a way the other examples are not: a worker carrying
-torch pulls a large image before it runs anything, which took about eight minutes
-from the first invoke to the result. `runware serverless apps workers multi-gpu`
+The first call is slow because a worker carrying torch pulls a large image before
+it runs anything, which took about eight minutes from the first invoke to the
+result. `runware serverless apps workers multi-gpu`
 reports `pulling` while that happens, so you can see a long first call instead of
 guessing at it. The next call answers in **5 seconds**.
 
