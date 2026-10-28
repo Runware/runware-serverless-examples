@@ -10,7 +10,7 @@ it and can repeat the result.
 ## Deploying it
 
 ```bash
-runware serverless deploy model.py --id echo --gpu-type l40s
+runware serverless deploy model.py --id echo --gpu-type rtx-pro-6000
 ```
 
 ## Calling it

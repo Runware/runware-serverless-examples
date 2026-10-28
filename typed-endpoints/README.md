@@ -57,7 +57,7 @@ it.
 ## Deploying it
 
 ```bash
-runware serverless deploy model.py --id typed-endpoints --gpu-type l40s
+runware serverless deploy model.py --id typed-endpoints --gpu-type rtx-pro-6000
 ```
 
 No weights and no GPU work, so the hardware only has to exist. Every app is
@@ -94,11 +94,11 @@ than a validation error. **That is the published default arriving as `False`.** 
 `null` would not validate against `bool` at all, which is how you can tell the two
 cases apart from the outside.
 
-Measured on an l40s: the first call takes about **1m45s** and comes back `202`
-with the task pending, because a sync invoke has a deadline and the worker is
-still starting. Poll `/v1/apps/typed-endpoints/tasks/{taskId}` for it. The next
-call answers `200` in **8 seconds**, of which a little over a second is the
-handler.
+Measured on an RTX PRO 6000: the first call takes about **1m45s** and comes
+back `202` with the task pending, because a sync invoke has a deadline of roughly
+105 seconds and the worker is still starting. Poll
+`/v1/apps/typed-endpoints/tasks/{taskId}` for it. The next call answers `200` in
+**2 seconds**.
 
 ## Testing it
 

@@ -50,7 +50,7 @@ the library is call methods on the images the annotations handed it.
 ## Deploying it
 
 ```bash
-runware serverless deploy model.py --id watermark --gpu-type l40s
+runware serverless deploy model.py --id watermark --gpu-type rtx-pro-6000
 ```
 
 ## Calling it
@@ -71,10 +71,11 @@ declared opacity rather than at nothing. **Each of those defaults is published, 
 the platform sends it**, and a `null` would not have validated against `Corner`,
 `float` or `int` at all.
 
-Measured on an l40s: the first call takes about **1m45s** and answers `202` with
-the task pending, because a sync invoke has a deadline of roughly 105 seconds and
-the worker is still starting. Poll `/v1/apps/watermark/tasks/{taskId}` for it. The
-next call answers `200` in **7 seconds**.
+Measured on an RTX PRO 6000: the first call takes about **1m45s** and answers
+`202` with the task pending, because a sync invoke has a deadline of roughly 105
+seconds and the worker is still starting. Poll
+`/v1/apps/watermark/tasks/{taskId}` for it. The next call answers `200` in
+**2 seconds**.
 
 ## Testing it
 

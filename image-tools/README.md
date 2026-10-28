@@ -13,7 +13,7 @@ Neither loads weights, and the pixels are a fixed 1x1 PNG standing in for the re
 ## Deploying it
 
 ```bash
-runware serverless deploy model.py --id image-tools --gpu-type l40s
+runware serverless deploy model.py --id image-tools --gpu-type rtx-pro-6000
 ```
 
 ## Calling it
