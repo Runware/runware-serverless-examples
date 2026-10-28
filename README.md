@@ -29,6 +29,7 @@ is **installed by the platform**, so your app does not list it.
 | [`watermark`](watermark/) | Real pixels in a handler: the annotation that decodes an image, where it works, and why it has nothing to say on the way out |
 | [`multi-gpu`](multi-gpu/) | A worker with more than one card: every rank runs the handler, the world is already up, and only rank 0 is answered |
 | [`config-and-secrets`](config-and-secrets/) | Configuration and credentials arrive the same way, share one namespace, and must not leave the worker |
+| [`chained-steps`](chained-steps/) | Two models in one request, so the image between them never crosses a boundary: the one shape a managed API cannot offer |
 
 Each one's README carries its own deploy command and the calls for its own endpoints.
 

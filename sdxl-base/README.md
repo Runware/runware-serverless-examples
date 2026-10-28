@@ -1,4 +1,4 @@
-# `sdxl-base`
+# Weights, and the volume they live on
 
 A model with real weights on a real GPU. `echo` and `image-tools` deliberately
 have neither, so this is the one that shows where the heavy parts of an app go.

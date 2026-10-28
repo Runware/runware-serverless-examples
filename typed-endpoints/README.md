@@ -1,11 +1,11 @@
-# `typed-endpoints`
+# What your signature publishes
 
 What a caller of your app sees. The platform builds the per-app documentation out
 of your handler's signature, so the signature is the contract, and a handler
 written with plain parameters publishes almost nothing.
 
 The work here is deliberately small, reading an image's metadata, so the shape of
-the request and the response is the whole subject.
+the request and the response are the subject.
 
 ## What it teaches
 
@@ -36,11 +36,11 @@ sends. `palette` in this app arrives as `False`, and there is nothing to re-appl
 
 **Nested models and enums survive.** A model that holds another model publishes
 both, and an enum publishes its values, so `orientation` documents itself as one
-of three strings rather than as a string.
+of three known strings, not as a string.
 
 **`@serve(encode_response=...)` is the escape hatch, and it has a price.** It
-takes the handler results and returns whatever the app should answer, which is the
-seam for a worker whose wire format cannot be its return type. What to know
+takes the handler results and returns whatever the app should answer, so a worker
+whose wire format cannot be its return type has a seam to use. What to know
 before reaching for it:
 
 - The published response is still the return annotation, so an encoder that
@@ -86,8 +86,7 @@ The report comes back at `output.predictions[0]`:
 }
 ```
 
-That is the trade: typed fields in, documented fields out, one extra level in the
-body.
+The trade: typed fields in, documented fields out, one extra level in the body.
 
 Omitting `palette` entirely answers the same way, with an empty palette rather
 than a validation error. **That is the published default arriving as `False`.** A

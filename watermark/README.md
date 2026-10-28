@@ -1,7 +1,7 @@
 # An image in a handler
 
-How an image reaches your code and how it leaves, which is the part every app
-that takes one has in common: an upscaler, an edit, a ControlNet pass.
+How an image reaches your code and how it leaves. Every app that takes one has
+this in common, whether it upscales, edits or runs a ControlNet pass.
 
 **The work here is a stand-in.** Laying a mark over an image is pixel arithmetic
 on the CPU, and nothing in `model.py` touches the GPU or loads a weight. You would
@@ -21,8 +21,8 @@ as a described base64 string, so callers are told what to send:
 ```
 
 **They only work on a field of a model.** Coercion looks for a Pydantic model to
-validate the parameter against, and these are images rather than models, so a bare
-`def predict(self, image: Base64RGBImage)` is never coerced and the handler
+validate the parameter against. These are images, not models, so a bare
+`def predict(self, image: Base64RGBImage)` is never coerced and your handler
 receives the string exactly as it arrived.
 
 The published contract goes with it. Measured, the same annotation on a bare
@@ -48,8 +48,8 @@ placeholder goes out in their place, so `Stamped.image` is a plain string the
 handler encodes. The annotation has nothing to say about an image on the way out.
 
 **The app declares Pillow.** The annotations need it at serving time, and pinning
-it keeps the app's behavior its own rather than whatever the runtime happens to
-carry. Nothing in `model.py` imports Pillow, because the only thing it does with
+pinning it means your app behaves the same wherever it runs, whatever the runtime
+happens to carry. Nothing in `model.py` imports Pillow, because the only thing it does with
 the library is call methods on the images the annotations handed it.
 
 ## Deploying it
@@ -72,7 +72,7 @@ path. The result is a base64 PNG at `output.predictions[0].image`, the same size
 the base.
 
 Sending only `base` and `mark` works, and the mark lands bottom right at the
-declared opacity rather than at nothing. **Each of those defaults is published, so
+declared opacity, not at nothing. **Each of those defaults is published, so
 the platform sends it**, and a `null` would not have validated against `Corner`,
 `float` or `int` at all.
 

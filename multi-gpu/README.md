@@ -1,17 +1,16 @@
-# `multi-gpu`
+# More than one card
 
 A worker with more than one card. The platform runs **one serving process per
 GPU**, so the interesting part is not the arithmetic, it is what each of those
 processes is expected to do.
 
-No weights, so a failure here is the world coming up rather than a model.
+No weights, so a failure here is the world coming up, not a model.
 
 ## What it teaches
 
 **Every rank runs your handler, with the same request.** Only rank 0 is reachable
 from outside the sandbox. It copies each invocation to its siblings and holds all
-of them at a barrier before any reaches your code. That is what makes a collective
-inside a handler safe, and it is also the constraint: **a rank that returns early
+of them at a barrier before any reaches your code. A collective inside a handler is safe for that reason, and it is also the constraint: **a rank that returns early
 hangs every rank that arrived at the collective it skipped.**
 
 So a handler with a shortcut in it is the one thing to avoid. The split in this
@@ -30,7 +29,7 @@ should carry every rank's contribution has to gather it, as `reduce` does.
 **Each rank works on its own card.** `torch.cuda.current_device()` is already this
 rank's, because the platform set it before `load`. Allocating with
 `device=self.device` is what keeps a rank off its siblings' memory, and it is why
-the whole range never has to fit on one card.
+no single card has to hold the whole range.
 
 **Nothing in the file names a GPU count.** `--gpus-per-worker` does, and the same
 file serves a world of one.
@@ -80,7 +79,7 @@ curl https://api.serverless.runware.ai/v1/apps/multi-gpu/invoke-sync/reduce \
 ```
 
 `partials` is what proves the work was distributed. A worker that ignored the
-world would answer with the whole sum in one entry.
+world would answer with one entry holding everything.
 
 Measured on two RTX PRO 6000:
 
@@ -99,8 +98,8 @@ same sum computed anywhere else.
 The first call is slow in a way the other examples are not: a worker carrying
 torch pulls a large image before it runs anything, which took about eight minutes
 from the first invoke to the result. `runware serverless apps workers multi-gpu`
-reports `pulling` while that happens, so a long first call is visible rather than
-a guess. The next call answers in **5 seconds**.
+reports `pulling` while that happens, so you can see a long first call instead of
+guessing at it. The next call answers in **5 seconds**.
 
 ## Testing it
 

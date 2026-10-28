@@ -1,4 +1,4 @@
-# `config-and-secrets`
+# Where a secret differs from a variable
 
 What a worker can see of its own configuration, and what it must never answer
 with. No weights, so the subject is the configuration itself.
@@ -11,7 +11,7 @@ and `LOG_LEVEL` from `--env-var`, and `model.py` reads both with the same line.
 
 That is why **they share one namespace**. A plain variable whose name collides
 with an attached secret's injected name is rejected, and so is the reverse.
-Neither silently wins, which is the right call: a credential quietly overridden by
+Neither silently wins, and that is deliberate: a credential quietly overridden by
 a plain variable would slip past everyone.
 
 **The value must not leave the worker.** A handler that returned it would publish a
@@ -78,7 +78,7 @@ curl https://api.serverless.runware.ai/v1/apps/config-and-secrets/invoke-sync/pr
 ```
 
 Before the attach, `API_TOKEN` comes back under `missing`. After it, `present`.
-The roll between the two is the whole mechanism, visible from outside.
+The roll between the two is the mechanism, and you can see it from outside.
 
 Measured on an RTX PRO 6000, with the secret attached:
 
