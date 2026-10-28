@@ -1,4 +1,4 @@
-# What your signature publishes
+# Typed requests and responses
 
 What a caller of your app sees. The platform builds the per-app documentation out
 of your handler's signature, so the signature is the contract, and a handler

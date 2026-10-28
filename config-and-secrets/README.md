@@ -1,4 +1,4 @@
-# Where a secret differs from a variable
+# Secrets and environment variables
 
 What a worker can see of its own configuration, and what it must never answer
 with. No weights, so the subject is the configuration itself.

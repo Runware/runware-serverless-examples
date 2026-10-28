@@ -1,4 +1,4 @@
-# Two endpoints, two shapes
+# Two endpoints in one app
 
 `generate` takes a prompt and `upscale` takes an image, so **no single request schema covers
 both**. Each handler's signature becomes its own, and the platform routes by path.

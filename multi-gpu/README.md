@@ -1,4 +1,4 @@
-# More than one card
+# Using more than one GPU
 
 A worker with more than one card. The platform runs **one serving process per
 GPU**, so the interesting part is not the arithmetic, it is what each of those

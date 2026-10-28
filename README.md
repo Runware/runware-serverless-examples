@@ -22,15 +22,15 @@ is **installed by the platform**, so your app does not list it.
 
 | Example | What it teaches |
 | --- | --- |
-| [`echo`](echo/) | The smallest app that works. No weights and no GPU work, so a failure in it is the platform rather than your model |
-| [`image-tools`](image-tools/) | One app whose endpoints take unrelated request shapes, and where the GPU choice actually lives |
-| [`loading-weights`](loading-weights/) | Real weights on a real GPU: where the heavy imports go, how dependencies are declared, and why the weights need a volume |
-| [`typed-endpoints`](typed-endpoints/) | What a caller of your app is told: the handler's signature is the published contract, and a plain parameter publishes almost none of it |
-| [`watermark`](watermark/) | Real pixels in a handler: the annotation that decodes an image, where it works, and why it has nothing to say on the way out |
-| [`multi-gpu`](multi-gpu/) | A worker with more than one card: every rank runs the handler, the world is already up, and only rank 0 is answered |
-| [`config-and-secrets`](config-and-secrets/) | Configuration and credentials arrive the same way, share one namespace, and must not leave the worker |
-| [`chained-steps`](chained-steps/) | Two models in one request, so the image between them never crosses a boundary: the one shape a managed API cannot offer |
-| [`chat-endpoint`](chat-endpoint/) | A language model behind an endpoint you define, and where a single-request handler stops being enough |
+| [`echo`](echo/) | The smallest app that runs: two endpoints, no weights, no GPU work. Deploy it to check the platform end to end |
+| [`image-tools`](image-tools/) | Two endpoints with different request shapes in one app, and where the GPU choice actually lives |
+| [`loading-weights`](loading-weights/) | Load a real model on a GPU: where the imports go, how to declare dependencies, and why weights belong on a volume |
+| [`typed-endpoints`](typed-endpoints/) | Describe your API with Pydantic so callers see every field, and so defaults reach your handler instead of nulls |
+| [`watermark`](watermark/) | Accept an image and return one, with the annotations that decode base64 into pixels before your handler runs |
+| [`multi-gpu`](multi-gpu/) | Run a worker across several cards, where every rank executes your handler and only the first one answers |
+| [`config-and-secrets`](config-and-secrets/) | Read configuration and credentials on a worker, and what the platform will and will not give you back |
+| [`chained-steps`](chained-steps/) | Run two models in one request so the image between them never leaves the worker |
+| [`chat-endpoint`](chat-endpoint/) | Serve chat completions from your own weights, with a request shape you define |
 
 Each one's README carries its own deploy command and the calls for its own endpoints.
 

@@ -1,4 +1,4 @@
-# A chat endpoint you define
+# Running a language model
 
 A language model behind an endpoint, and the shape of that endpoint is yours. No
 weights of the image kind, so what the example is about is the request.

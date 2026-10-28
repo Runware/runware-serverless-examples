@@ -1,4 +1,4 @@
-# Echo
+# Your first app
 
 The smallest app that works. No weights and no GPU work, so **a failure in it is the platform
 rather than your model**. Reach for it to prove the loop end to end, or when something else is

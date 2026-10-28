@@ -1,4 +1,4 @@
-# Weights, and the volume they live on
+# Running a model with weights
 
 The first example here with real weights on a real GPU. `echo` and `image-tools`
 deliberately have neither, so this is the one that shows where the heavy parts of

@@ -1,4 +1,4 @@
-# An image in a handler
+# Taking an image as input
 
 How an image reaches your code and how it leaves. Every app that takes one has
 this in common, whether it upscales, edits or runs a ControlNet pass.

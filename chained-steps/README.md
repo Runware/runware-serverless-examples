@@ -1,4 +1,4 @@
-# Two models, one request
+# Generating an image and removing its background
 
 A product shot generated and cut out of its background, in one call. Two
 different models run in one worker, and the image between them never crosses a
