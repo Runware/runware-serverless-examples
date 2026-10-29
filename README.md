@@ -11,7 +11,7 @@ renders these files**, so what you read there is what runs here.
 ```bash
 git clone https://github.com/Runware/runware-serverless-examples
 cd runware-serverless-examples/echo
-runware serverless deploy model.py --id echo --gpu-type l40s
+runware serverless deploy model.py --id echo --gpu-type rtx-pro-6000
 ```
 
 You need the [Runware CLI](https://runware.ai/docs/tools/cli) and an API key. The
@@ -48,37 +48,6 @@ uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest
 Every example is tested in CI the same way, **from inside its own directory**, because
 each one is an independent project and they all hold a module named `model`. One
 pytest run cannot import two of them.
-
-## Where the weights go
-
-Neither example loads any, so neither shows the thing that matters most for a real model:
-**what you download in `load` should land on a volume**, not on the sandbox filesystem.
-
-```python
-import os
-
-_CACHE = "/root/.cache/huggingface"
-
-
-@serve
-class MyModel:
-    def load(self) -> None:
-        if hasattr(self, "pipeline"):
-            return
-        self.pipeline = SomePipeline.from_pretrained(REPO, cache_dir=_CACHE).to("cuda")
-```
-
-```bash
-runware serverless deploy model.py --id my-model --gpu-type h100 \
-  --volume /root/.cache/huggingface
-```
-
-Two things are doing work there. The **volume** keeps the weights across cold starts, so
-you are not paying GPU time to fetch them again. The **`hasattr` guard** makes `load` safe
-to run twice, which it has to be: it is retried if the GPU runs out of memory at startup.
-
-See [Volumes](https://runware.ai/docs/serverless/volumes) and
-[Writing a model](https://runware.ai/docs/serverless/writing-a-model).
 
 ## Adding one
 
