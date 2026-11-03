@@ -1,16 +1,16 @@
-# A render farm
+# Rendering 3D frames
 
-Blender rendering one frame of a turntable on a GPU. **No model, no weights, no
-machine learning anywhere in it.**
+Blender rendering one frame of a turntable on a GPU, with **no model and no
+weights in the app at all**.
 
-This is the container path's real pitch: the environment matters more than the
-code. Blender needs system libraries, ships as a tarball with its own Python, and
-has a command line rather than an API.
+It is the case the container path is for: the app needs an environment more than
+it needs code. Blender links against system libraries, ships as a tarball with
+its own Python, and has a command line rather than an API.
 
 ## What it teaches
 
-**A container app is your server, so the whole thing runs under Docker first.**
-That is the advantage the code path does not have. Build it, run it, curl it, and
+**A container app is your server, so you can run the whole thing under Docker
+first.** The code path cannot be tested that way. Build it, run it, curl it, and
 only then deploy:
 
 ```bash
@@ -28,28 +28,26 @@ the source. Nothing can look inside an image and find them, so `container.yaml`
 declares the port, the probes, the timeouts and a JSON Schema per endpoint.
 
 **Do not bind 8000, 8888, 8889 or 9090.** The platform binds all four inside a
-worker pod and every container in a pod shares one network namespace. Taking one
-does not warn you, it just loses the bind or exposes you through a Service that was
-never meant to carry your traffic. This one uses 8080.
+worker pod and every container in a pod shares one network namespace. Taking one gives no warning: your server either loses the bind or becomes
+reachable through a Service that was never meant to carry your traffic. This one uses 8080.
 
-**Readiness is a promise about your weights, and here there are none.** Blender is
-in the image, so `/ready` answers `200` immediately and honestly. An app that
-loaded something would return `503` until it was done, which is how a cold start is
-held off the caller.
+**Readiness is about your weights, and this app has none.** Blender is in the
+image, so `/ready` answers `200` straight away. An app that loads something
+returns `503` until it is done, which keeps a cold start off the caller.
 
-**Raise `requestSeconds` before you need it.** It defaults to 60 and a render is
-not a 60 second job. `container.yaml` sets 600, and the platform waits that plus 30
-seconds. **This is the one timeout a code app cannot set**: `requestTimeoutSecs` is
-container-only, which is a real reason to pick this path for long work.
+**Raise `requestSeconds` before you need it.** It defaults to 60 and a render
+takes longer than that. `container.yaml` sets 600, and the platform waits that
+plus 30 seconds. **A code app cannot set this timeout at all**:
+`requestTimeoutSecs` is container-only, which is one reason to choose this path
+for long work.
 
 **Build the scene in code rather than shipping a `.blend`.** A binary asset in the
 repository is one more thing to keep in step with the script that renders it. This
 scene is six tori, a light and a camera, written in Blender's own Python.
 
-**The fan-out is the caller's loop.** Modal's version of this renders every frame
-in parallel from inside the app. There is no map primitive here: you call the
-endpoint once per frame, and `--max-workers` is what decides how many of those run
-at a time. One app, one queue, and the parallelism lives in your shell.
+**The caller does the fan-out.** There is no map primitive: you call the
+endpoint once per frame, and `--max-workers` decides how many of those run at a
+time. One app, one queue, and the loop is yours.
 
 ```bash
 for frame in $(seq 1 48); do
@@ -98,13 +96,11 @@ Measured on an RTX PRO 6000, at the default 960x540:
 | A warm worker, 1280x720 at 96 samples | 2.3s | 1.9s |
 
 `device` came back `GPU` on every one, so Cycles found the card without being
-told which backend to use. Note how little the sample count moves the number: at
-this resolution the render is dominated by scene setup rather than by sampling,
-which is the kind of thing worth measuring before you tune it.
+told which backend to use. The sample count barely moves the number: at this resolution the render is
+dominated by scene setup rather than by sampling.
 
 
 ## Testing it
 
 There is nothing local to run, which is why this directory has no `test_model.py`:
-a container example is tested by running the container. The `docker run` above is
-the test, and it exercises more of the real thing than any code app's suite can.
+a container example is tested by running the container. The `docker run` above is that test.

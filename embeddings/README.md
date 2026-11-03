@@ -1,7 +1,7 @@
 # Embeddings
 
-A text embedding model, and the one request shape none of the other examples use:
-**a list in, a list out**.
+A text embedding model that takes a list of texts and returns one vector per
+text.
 
 `bge-small-en-v1.5` is MIT and ungated, so this deploys with **no token**.
 
@@ -26,12 +26,12 @@ What that buys, measured on an RTX PRO 6000 against a warm worker:
 it is fixed overhead rather than model work. Medians of repeated calls, and one
 text ranged from 0.47s to 0.84s across five of them.
 
-So the list is close to free. Sending those 256 texts one per request instead would
-have bought 256 queue hops and 256 of that fixed cost, for the same arithmetic.
+Sending those 256 texts one per request would pay 256 queue hops and 256 times
+that fixed cost for the same work.
 
-**The platform enforces the types it published, and nothing else.** This is worth
-knowing before you trust a schema to protect your worker. Measured against this
-same app:
+**The platform enforces the types it published, and nothing else.** Check this
+before you rely on a schema to keep bad requests away from your worker. Measured
+against this same app:
 
 | Request | What happened |
 | --- | --- |
@@ -41,23 +41,23 @@ same app:
 | An empty list, against `min_length=1` | **reached the worker** and failed there |
 | 257 texts, against `max_length=256` | **reached the worker** and failed there |
 
-A type is checked before anything wakes. **A value constraint is yours to
-enforce**, and someone who breaks one pays for a worker to tell them so.
+A type is checked before anything wakes. **A value constraint is enforced by the
+app, not the platform**, and a request that breaks one wakes a worker before it
+is refused.
 
 **Forbid the fields you do not know, and the platform will enforce it for you.**
 Pydantic ignores an unknown field by default, so a caller who writes `normalise`
 instead of `normalize` gets a silent success and the wrong behavior.
 `model_config = ConfigDict(extra="forbid")` turns that into an error.
 
-It is published, too, which is the part worth knowing. Measured before and after
-adding it, the same request carrying a misspelled field went from **a completed
-task on a woken worker** to **a 422 in half a second with nothing woken**. So this
-one line is not only correctness, it is the difference between paying for the
-mistake and not.
+It is published too. Measured before and after adding it, the same request
+carrying a misspelled field went from **a completed task on a woken worker** to
+**a 422 in half a second with nothing woken**, so the line saves the cost of the
+mistake as well as the wrong answer.
 
-**Return the vectors, not an index.** This app embeds and answers. Where the
-vectors go afterwards is the caller's business, and keeping it that way is what
-makes the app stateless enough to scale out.
+**Return the vectors rather than storing them.** This app embeds and answers,
+and the caller decides where the vectors go. That keeps it stateless, so it
+scales out across workers.
 
 ## Deploying it
 
@@ -97,9 +97,9 @@ Measured on an RTX PRO 6000:
 | A restart, weights already on the volume | 14s |
 | A warm worker | 0.6s |
 
-The first call pays for the worker, the download and a warmup pass. The volume does
-not keep a worker warm: it makes a **restart** cheap, which is the gap between the
-second row and the third.
+The first call pays for the worker, the download and a warmup pass. A volume
+does not keep a worker warm, it makes a **restart** cheap, which is the gap
+between the second row and the third.
 
 ## Testing it
 
@@ -108,5 +108,4 @@ uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q
 ```
 
 The tests run with neither torch nor sentence-transformers installed, the same
-position the build is in when it imports the file. They pin the request contract,
-which is the part a caller depends on.
+position the build is in when it imports the file. They pin the request contract, which is what a caller depends on.

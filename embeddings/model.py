@@ -14,13 +14,13 @@ CACHE = "/weights"
 filesystem, so weights left outside a volume are copied into every one."""
 
 MAX_TEXTS = 256
-"""A ceiling this app enforces itself.
+"""The largest list this app accepts.
 
 Measured: the platform checks the types it published and rejects a wrong one in
 under half a second without waking anything, but it does not check a list's
 length, so a request carrying more than this reaches the worker and fails there.
-A value constraint is yours to enforce, and it costs a wake when someone breaks
-it."""
+This app enforces the value constraint itself, and a request that breaks one
+wakes a worker before it is refused."""
 
 ENCODE_BATCH = 64
 """How many texts cross the GPU at once inside one request. Unrelated to how many

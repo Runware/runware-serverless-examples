@@ -1,25 +1,25 @@
-# A job that outlives one request
+# Resuming a long job
 
 Work that takes longer than you want to hold a connection open, driven as **many
-short calls that resume**. Each call does a slice, writes a checkpoint, and tells
-you whether to call again.
+short calls that resume**. Each call runs a slice, writes a checkpoint, and tells you whether to call
+again.
 
-The training here is a stand-in, deliberately small. The subject is the checkpoint
-and where it goes.
+The training loop here is a small stand-in. What the example is about is the
+checkpoint and where it goes.
 
 ## What it teaches
 
-**A code app is not cut off by a request timeout, and that is not permission to
-run for hours.** `requestTimeoutSecs` applies to container apps only. A code app
-stores the field and does not apply it. What still bites you is everything else: a
-worker is checkpointed and restored, `load` is retried and re-instantiated when
-the GPU is short at startup, and an idle worker is scaled away. **A long job on one worker loses all of its
+**A code app is not cut off by a request timeout, but it still cannot run for
+hours.** `requestTimeoutSecs` applies to container apps only. A code app
+stores the field and does not apply it. What ends a long run is everything else: a worker is checkpointed and restored,
+`load` is retried and re-instantiated when the GPU is short at startup, and an
+idle worker is scaled away. **A long job on one worker loses all of its
 work if that worker goes away.**
 
-**The checkpoint cannot live on a volume.** This is the part that catches people. A
-volume is **node-local**, so the worker that serves your next call may be on a
-different node and see an empty directory. A volume makes a *restart* cheap, which
-is not the same promise as a *resume*.
+**The checkpoint cannot live on a volume.** A volume is **node-local**, so the
+worker that serves your next call may be on a different node and see an empty
+directory. A volume makes a *restart* cheap, it does not make a *resume*
+possible.
 
 So the checkpoint goes to object storage, which every worker can reach:
 
@@ -27,26 +27,26 @@ So the checkpoint goes to object storage, which every worker can reach:
 self.store.put_object(Bucket=BUCKET, Key=f"checkpoints/{job}.pt", Body=buffer.getvalue())
 ```
 
-**The job name is what selects the checkpoint.** Same name, same checkpoint, work
-continues. New name, fresh start. There is no job registry to keep, which means
-there is no job registry to get out of step with the storage.
+**The job name selects the checkpoint.** The same name resumes the same
+checkpoint, a new name starts fresh. There is no job registry to keep in step
+with the storage.
 
 **A job name becomes part of an object key, so validate it.** `pattern` on the
 field keeps a slash or a `..` out of the key.
 
-**It does not keep it out cheaply, though.** Measured: a job named `../etc/passwd`
-is refused by this app, after a worker has woken, not by the platform before it.
+**The check still costs a worker.** Measured: a job named `../etc/passwd` is
+refused by this app after a worker has woken, not by the platform before it.
 The platform enforces the types it published and `additionalProperties`. The value
 constraints, `pattern`, `minimum`, `maximum` and a list's length, **all reach the
-worker**. Validate anyway, and know which half of the contract you are getting.
+worker**. Validate anyway, and expect to pay for a wake when someone sends a bad name.
 
-**Return progress, not a promise.** Every call answers with `steps_done`,
-`total_steps` and `done`, so the caller's loop is three lines and a human can read
+**Return the progress in every answer.** Each call reports `steps_done`,
+`total_steps` and `done`, so the caller's loop is three lines and you can see
 where a job got to without a dashboard.
 
-**Size the slice by what a failure should cost.** 200 steps here. A slice that is
-too big risks more work on each failure, and too small pays the fixed per-call
-overhead more often than you need to.
+**Size the slice by what a failure should cost.** It is 200 steps here. A bigger
+slice loses more work on each failure, a smaller one pays the fixed per-call
+overhead more often.
 
 ## Deploying it
 
@@ -126,10 +126,10 @@ Measured on an RTX PRO 6000, five calls to one job of 1000 steps:
 | 4 | 600 | 800 | 0.0189 | 1.3s |
 | 5 | 800 | 1000, `done` | 0.0142 | 1.5s |
 
-**The loss column is what proves the resume worked.** A step counter shows only that
-a number was stored. The loss falling across five separate workers' lifetimes is what proves
-the **optimizer state** survived the round trip, which is the part that is easy to
-get wrong and silent when you do.
+**The loss column is what proves the resume worked.** A step counter only shows
+that a number was stored. A loss that keeps falling across five separate workers
+shows that the **optimizer state** survived the round trip, which is easy to get
+wrong and silent when you do.
 
 A sixth call under a new job name came back at `resumed_from: 0` with a loss of
 0.0444, exactly the first call's, which is what a fresh start should look like.
@@ -141,6 +141,5 @@ uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q
 ```
 
 The tests run with neither torch nor boto3 installed, and they pin the request
-contract and the object key. **The S3 round trip is not covered here**, because it
-needs a bucket: that half is exercised by deploying and calling the app, which is
-what the table above is.
+contract and the object key. **The S3 round trip is not covered here**, because it needs a bucket. Deploying
+and calling the app covers that half, which is what the table above measures.

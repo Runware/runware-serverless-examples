@@ -1,17 +1,15 @@
 # Folding a protein
 
-A GPU workload with nothing to do with images, video or text. A protein sequence
-goes in and a predicted structure comes out, as PDB.
+A protein sequence goes in and a predicted structure comes out as PDB, on the
+same GPUs the models API runs on.
 
 ESMFold is MIT licensed and its weights are ungated, so this deploys with **no
 token**.
 
 ## What it teaches
 
-**Serverless exists for the GPU work the models API does not cover.** That API
-handles image, video, audio and text. This is the shape of app that
-exists because your workload is not any of those: your own weights, your own
-science, the same hardware.
+**Serverless exists for the GPU work the models API does not cover.** That API handles image, video, audio and text. A workload outside those four is
+what this path is for: you bring the weights, the platform brings the hardware.
 
 **Pin the weights to a revision.** `from_pretrained` takes `revision`, and
 without it you are asking for whatever `main` holds today. That is how you end up
@@ -22,14 +20,14 @@ worker that exits at startup rather than as a bad answer.
 EsmForProteinFolding.from_pretrained(MODEL, revision=REVISION, cache_dir=CACHE)
 ```
 
-**Take the port, not the original, when the original needs a compiler.**
+**Prefer a port that drops the build step.**
 `fair-esm[esmfold]` pulls in OpenFold and wants `nvcc` to build kernels at
 install time. **A code worker has no toolchain at all**, so that route cannot
-run here. The transformers port dropped the OpenFold dependency, which is what
-makes this a plain code app rather than a container.
+run here. The transformers port dropped the OpenFold dependency, which is what lets this
+run as a code app rather than a container.
 
-**No alignment, so no third party in the request path.** ESMFold predicts from a
-single sequence. Folding tools that want a multiple sequence alignment reach out
+**No alignment server in the request path.** ESMFold predicts from a single
+sequence. Folding tools that want a multiple sequence alignment reach out
 to an alignment server, and an app that calls a third party on every request
 depends on that third party staying up.
 
@@ -89,8 +87,7 @@ Measured on an RTX PRO 6000:
 | A warm worker, 154 residues | 1.2s |
 | A warm worker, 22 residues | 1.3s |
 
-**A restart is still minutes, and that is worth knowing before you size an app
-around this.** The volume saves the download, not the load: 2.6GB still has to
+**A restart still takes minutes.** The volume saves the download, not the load: 2.6GB still has to
 reach the GPU and the warmup fold still runs. Keep `--min-workers 1` if a cold
 caller cannot wait.
 

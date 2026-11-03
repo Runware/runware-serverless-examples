@@ -1,4 +1,4 @@
-"""A job that outlives one request: do a slice, checkpoint, answer, resume.
+"""Resuming a long job: run a slice, checkpoint, answer, resume.
 
 The training here is a stand-in, deliberately small, because the subject is the
 checkpoint and where it goes. Swap the three lines in ``_step`` for real work and

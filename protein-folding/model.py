@@ -1,4 +1,4 @@
-"""Folding a protein: GPU work with nothing to do with media.
+"""Folding a protein: a sequence in, a predicted structure out.
 
 ESMFold predicts a structure from a single sequence, with no multiple sequence
 alignment and so no call out to an alignment server. The whole app is one model
