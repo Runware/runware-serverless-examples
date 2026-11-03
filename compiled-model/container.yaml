@@ -1,0 +1,44 @@
+configVersion: 2
+port: 8080
+probes:
+  readiness: /ready
+  liveness: /health
+timeouts:
+  requestSeconds: 120
+  startupSeconds: 2400
+endpoints:
+  - path: classify
+    default: true
+    input:
+      type: object
+      additionalProperties: false
+      required: [image]
+      properties:
+        image:
+          type: string
+          description: The image to classify, base64 encoded, with no data URI prefix.
+        top:
+          type: integer
+          minimum: 1
+          maximum: 10
+          description: How many labels to return.
+    output:
+      type: object
+      properties:
+        labels:
+          type: array
+          description: The most likely labels, best first.
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              index:
+                type: integer
+              probability:
+                type: number
+        compiled:
+          type: boolean
+          description: Whether the graph this request ran was a compiled one.
+        seconds:
+          type: number

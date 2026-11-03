@@ -1,0 +1,47 @@
+configVersion: 2
+port: 8080
+probes:
+  readiness: /ready
+  liveness: /health
+timeouts:
+  requestSeconds: 600
+  startupSeconds: 600
+endpoints:
+  - path: render
+    default: true
+    input:
+      type: object
+      additionalProperties: false
+      required: [frame]
+      properties:
+        frame:
+          type: integer
+          minimum: 1
+          maximum: 240
+          description: Which frame of the turntable to render.
+        samples:
+          type: integer
+          minimum: 1
+          maximum: 512
+          description: Cycles samples per pixel. More is cleaner and slower.
+        width:
+          type: integer
+          minimum: 64
+          maximum: 2048
+        height:
+          type: integer
+          minimum: 64
+          maximum: 2048
+    output:
+      type: object
+      properties:
+        image:
+          type: string
+          description: The rendered frame as a base64 PNG.
+        frame:
+          type: integer
+        device:
+          type: string
+          description: Which Cycles device rendered it, GPU or CPU.
+        seconds:
+          type: number

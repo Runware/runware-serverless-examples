@@ -16,17 +16,19 @@ jobs:
         with:
           version: "latest"
 
-      # Each example is an independent project with its own model.py, so it is tested
-      # from inside its own directory, the way someone who cloned it would. One pytest
-      # run cannot hold two modules that share a name.
+      # Each example is an independent project with its own module, so it is tested from
+      # inside its own directory, the way someone who cloned it would. One pytest run
+      # cannot hold two modules that share a name.
       - name: Check every example has the shape every example has
         run: python3 check_examples.py
 
+      # A container example declares an image and a config, so it has nothing local to
+      # run and no tests to skip past.
       - name: Test every example
         run: |
           failed=0
           for example in */; do
-            [ -f "$example/model.py" ] || continue
+            ls "$example"test_*.py > /dev/null 2>&1 || continue
             echo "::group::$example"
             (cd "$example" && uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q) || failed=1
             echo "::endgroup::"

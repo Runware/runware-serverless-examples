@@ -5,23 +5,36 @@ Adding one should be dropping in a directory, not remembering what the last one
 happened to include. An example is only useful to someone who never opens the
 documentation if it carries its own README, so that counts as part of the shape.
 
+There are two shapes, because the platform takes two kinds of source. A directory
+with a `container.yaml` is a container example and is judged against the container
+shape; everything else is code. A container example has nothing local to run, so it
+declares no tests.
+
 Usage: python3 check_examples.py
 """
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
-REQUIRED_FILES = ("model.py", "test_model.py", "README.md")
+
+CODE_FILES = ("model.py", "test_model.py", "README.md")
+CONTAINER_FILES = ("Dockerfile", "container.yaml", "README.md")
+CONTAINER_KEYS = ("configVersion", "port", "probes", "endpoints")
 
 
 def examples() -> list[Path]:
     return sorted(p for p in ROOT.iterdir() if p.is_dir() and not p.name.startswith("."))
 
 
-def problems_in(example: Path) -> list[str]:
-    found = [f"{example.name}: no {name}" for name in REQUIRED_FILES if not (example / name).exists()]
+def missing(example: Path, files: tuple[str, ...]) -> list[str]:
+    return [f"{example.name}: no {name}" for name in files if not (example / name).exists()]
+
+
+def code_problems(example: Path) -> list[str]:
+    found = missing(example, CODE_FILES)
 
     if (example / "model.py").exists():
         source = (example / "model.py").read_text(encoding="utf-8")
@@ -29,6 +42,24 @@ def problems_in(example: Path) -> list[str]:
             found.append(f"{example.name}: model.py opens with no docstring saying what it is")
         if "@serve" not in source:
             found.append(f"{example.name}: model.py registers no class with @serve")
+
+    return found
+
+
+def container_problems(example: Path) -> list[str]:
+    found = missing(example, CONTAINER_FILES)
+
+    config = (example / "container.yaml").read_text(encoding="utf-8")
+    for key in CONTAINER_KEYS:
+        if not re.search(rf"^{key}:", config, re.MULTILINE):
+            found.append(f"{example.name}: container.yaml declares no {key}")
+
+    return found
+
+
+def problems_in(example: Path) -> list[str]:
+    container = (example / "container.yaml").exists()
+    found = container_problems(example) if container else code_problems(example)
 
     if (example / "README.md").exists():
         readme = (example / "README.md").read_text(encoding="utf-8")

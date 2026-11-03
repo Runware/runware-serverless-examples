@@ -31,6 +31,11 @@ is **installed by the platform**, so your app does not list it.
 | [`config-and-secrets`](config-and-secrets/) | Read configuration and credentials on a worker, and what the platform will and will not give you back |
 | [`chained-steps`](chained-steps/) | Run two models in one request so the image between them never leaves the worker |
 | [`chat-endpoint`](chat-endpoint/) | Serve chat completions from your own weights, with a request shape you define |
+| [`embeddings`](embeddings/) | A list in and a list out, and why batching is something you do inside one request |
+| [`compiled-model`](compiled-model/) | Put the compiler's own cache on the volume, so only the first worker ever pays to compile |
+| [`resumable-job`](resumable-job/) | Work too long for one call: checkpoint somewhere every worker can reach, and resume |
+| [`protein-folding`](protein-folding/) | A GPU workload that is not media at all, with its weights pinned to a revision |
+| [`render-farm`](render-farm/) | A container with no model in it: system packages, your own server, your own timeouts |
 
 Each one's README carries its own deploy command and the calls for its own endpoints.
 
