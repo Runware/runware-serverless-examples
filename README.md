@@ -11,7 +11,7 @@ renders these files**, so what you read there is what runs here.
 ```bash
 git clone https://github.com/Runware/runware-serverless-examples
 cd runware-serverless-examples/echo
-runware serverless deploy model.py --id echo --gpu-type rtx-pro-6000
+runware serverless deploy model.py --id echo-app --gpu-type rtx-pro-6000
 ```
 
 You need the [Runware CLI](https://runware.ai/docs/tools/cli) and an API key. The

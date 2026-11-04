@@ -10,7 +10,7 @@ it and can repeat the result.
 ## Deploying it
 
 ```bash
-runware serverless deploy model.py --id echo --gpu-type rtx-pro-6000
+runware serverless deploy model.py --id echo-app --gpu-type rtx-pro-6000
 ```
 
 ## Calling it
@@ -19,7 +19,7 @@ A handler answers on **the app id and its own name**, and the body is an envelop
 `payload` holds the handler's arguments.
 
 ```bash
-curl https://api.serverless.runware.ai/v1/apps/echo/invoke-sync/echo \
+curl https://api.serverless.runware.ai/v1/apps/echo-app/invoke-sync/echo \
   -H "Authorization: Bearer $RUNWARE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"taskId": "7c9e6679-7425-40de-944b-e07fc1f90ae7", "payload": {"message": "hello"}}'
@@ -29,7 +29,7 @@ Underscores in a handler's name **become hyphens in its path**, so `reverse_mess
 on `/reverse-message`.
 
 ```bash
-curl https://api.serverless.runware.ai/v1/apps/echo/invoke-sync/reverse-message \
+curl https://api.serverless.runware.ai/v1/apps/echo-app/invoke-sync/reverse-message \
   -H "Authorization: Bearer $RUNWARE_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{"taskId": "1b4e28ba-2fa1-11d2-883f-0016d3cca427", "payload": {"message": "hello", "repeat": 2}}'

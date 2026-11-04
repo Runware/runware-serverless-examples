@@ -29,6 +29,13 @@ CONTAINER_FILES = ("Dockerfile", "container.yaml", "README.md", "runware.yaml")
 CONTAINER_KEYS = ("configVersion", "port", "probes", "endpoints")
 MANIFEST_KEYS = ("configVersion", "id", "source", "compute")
 
+# The platform's own AppId rule, which fixes the length at 6 to 30 characters.
+# An id outside it cannot be deployed at all, and the README's command fails on
+# the first call rather than at the end, so the shape check is the right place
+# to catch it. `echo` was that id for a while, four characters against a
+# minimum of six.
+APP_ID = re.compile(r"^[a-z][a-z0-9-]{4,28}[a-z0-9]$")
+
 # Each deploy flag and the manifest key that carries it. Values are not compared,
 # only presence: a flag added to one and not the other is the drift worth catching,
 # and reading the values would mean a YAML parser in a check that has no dependencies.
@@ -87,8 +94,18 @@ def manifest_problems(example: Path) -> list[str]:
         if not declared_key(manifest, key)
     ]
 
-    if not re.search(rf"^id: {re.escape(example.name)}$", manifest, re.MULTILINE):
-        found.append(f"{example.name}: runware.yaml has an id other than the directory name")
+    # The id is the app the example deploys, not the directory it lives in, so
+    # what matters is that the platform would accept it and that the README
+    # deploys that same app. `echo` is the example whose id cannot be its own
+    # name, since AppId starts at six characters.
+    declared_id = re.search(r"^id:\s*(\S+)$", manifest, re.MULTILINE)
+    app_id = declared_id.group(1) if declared_id else ""
+    if declared_id and not APP_ID.match(app_id):
+        found.append(
+            f"{example.name}: runware.yaml has an id the platform would refuse, "
+            f"{app_id!r} (6 to 30 characters, lowercase letters, digits and hyphens, "
+            "starting with a letter and ending with a letter or digit)"
+        )
 
     if not (example / "README.md").exists():
         return found
@@ -98,6 +115,9 @@ def manifest_problems(example: Path) -> list[str]:
     command = re.search(r"runware serverless deploy[^\n`]*", readme)
     if command is None:
         return found
+
+    if app_id and f"--id {app_id}" not in command.group(0):
+        found.append(f"{example.name}: runware.yaml names the app {app_id} and README.md deploys another")
 
     for flag, key in FLAG_KEYS.items():
         passed, declared = flag in command.group(0), declared_key(manifest, key)
