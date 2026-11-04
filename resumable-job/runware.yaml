@@ -1,0 +1,11 @@
+configVersion: 1
+id: resumable-job
+source:
+  type: code
+  entry: model.py
+compute:
+  gpuType: rtx-pro-6000
+secrets:
+  - name: S3_BUCKET
+  - name: S3_ACCESS_KEY_ID
+  - name: S3_SECRET_ACCESS_KEY

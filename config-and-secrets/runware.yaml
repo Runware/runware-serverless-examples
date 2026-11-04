@@ -1,0 +1,13 @@
+configVersion: 1
+id: config-and-secrets
+source:
+  type: code
+  entry: model.py
+compute:
+  gpuType: rtx-pro-6000
+envVars:
+  LOG_LEVEL: info
+  CACHE_DIR: /weights
+secrets:
+  - name: DOCS_EXAMPLE_TOKEN
+    envVarName: API_TOKEN

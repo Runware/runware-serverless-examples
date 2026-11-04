@@ -1,0 +1,7 @@
+configVersion: 1
+id: watermark
+source:
+  type: code
+  entry: model.py
+compute:
+  gpuType: rtx-pro-6000

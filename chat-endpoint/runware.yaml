@@ -1,0 +1,9 @@
+configVersion: 1
+id: chat-endpoint
+source:
+  type: code
+  entry: model.py
+compute:
+  gpuType: rtx-pro-6000
+volumes:
+  - /weights

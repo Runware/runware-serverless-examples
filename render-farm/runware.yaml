@@ -1,0 +1,7 @@
+configVersion: 1
+id: render-farm
+source:
+  type: container
+compute:
+  gpuType: rtx-pro-6000
+  maxWorkers: 4

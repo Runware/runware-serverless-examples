@@ -1,0 +1,8 @@
+configVersion: 1
+id: compiled-model
+source:
+  type: container
+compute:
+  gpuType: rtx-pro-6000
+volumes:
+  - /weights

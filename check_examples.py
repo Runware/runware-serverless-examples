@@ -10,6 +10,10 @@ with a `container.yaml` is a container example and is judged against the contain
 shape; everything else is code. A container example has nothing local to run, so it
 declares no tests.
 
+Both shapes carry a `runware.yaml`, which holds the deploy options the README passes
+as flags. The two have to agree, or a one-command deploy lands somewhere other than
+where the README says it does.
+
 Usage: python3 check_examples.py
 """
 
@@ -20,9 +24,23 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 
-CODE_FILES = ("model.py", "test_model.py", "README.md")
-CONTAINER_FILES = ("Dockerfile", "container.yaml", "README.md")
+CODE_FILES = ("model.py", "test_model.py", "README.md", "runware.yaml")
+CONTAINER_FILES = ("Dockerfile", "container.yaml", "README.md", "runware.yaml")
 CONTAINER_KEYS = ("configVersion", "port", "probes", "endpoints")
+MANIFEST_KEYS = ("configVersion", "id", "source", "compute")
+
+# Each deploy flag and the manifest key that carries it. Values are not compared,
+# only presence: a flag added to one and not the other is the drift worth catching,
+# and reading the values would mean a YAML parser in a check that has no dependencies.
+FLAG_KEYS = {
+    "--volume": "volumes",
+    "--secret": "secrets",
+    "--env-var": "envVars",
+    "--gpus-per-worker": "gpusPerWorker",
+    "--max-workers": "maxWorkers",
+    "--min-workers": "minWorkers",
+    "--fallback-gpu-type": "fallbackGpuType",
+}
 
 
 def examples() -> list[Path]:
@@ -57,9 +75,50 @@ def container_problems(example: Path) -> list[str]:
     return found
 
 
+def declared_key(manifest: str, key: str) -> bool:
+    return bool(re.search(rf"^\s*{key}:", manifest, re.MULTILINE))
+
+
+def manifest_problems(example: Path) -> list[str]:
+    manifest = (example / "runware.yaml").read_text(encoding="utf-8")
+    found = [
+        f"{example.name}: runware.yaml declares no {key}"
+        for key in MANIFEST_KEYS
+        if not declared_key(manifest, key)
+    ]
+
+    if not re.search(rf"^id: {re.escape(example.name)}$", manifest, re.MULTILINE):
+        found.append(f"{example.name}: runware.yaml has an id other than the directory name")
+
+    if not (example / "README.md").exists():
+        return found
+
+    # The command is written over several lines, joined with a trailing backslash.
+    readme = re.sub(r"\\\n\s*", " ", (example / "README.md").read_text(encoding="utf-8"))
+    command = re.search(r"runware serverless deploy[^\n`]*", readme)
+    if command is None:
+        return found
+
+    for flag, key in FLAG_KEYS.items():
+        passed, declared = flag in command.group(0), declared_key(manifest, key)
+        # A secret can be attached at create or afterwards, and an example whose
+        # subject is secrets shows the longer way on purpose.
+        if key == "secrets" and "secrets attach" in readme:
+            passed = True
+        if passed and not declared:
+            found.append(f"{example.name}: README.md passes {flag} and runware.yaml has no {key}")
+        if declared and not passed:
+            found.append(f"{example.name}: runware.yaml declares {key} and README.md passes no {flag}")
+
+    return found
+
+
 def problems_in(example: Path) -> list[str]:
     container = (example / "container.yaml").exists()
     found = container_problems(example) if container else code_problems(example)
+
+    if (example / "runware.yaml").exists():
+        found += manifest_problems(example)
 
     if (example / "README.md").exists():
         readme = (example / "README.md").read_text(encoding="utf-8")

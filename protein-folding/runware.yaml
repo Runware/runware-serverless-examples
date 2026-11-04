@@ -1,0 +1,9 @@
+configVersion: 1
+id: protein-folding
+source:
+  type: code
+  entry: model.py
+compute:
+  gpuType: rtx-pro-6000
+volumes:
+  - /weights
