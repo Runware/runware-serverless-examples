@@ -35,6 +35,7 @@ is **installed by the platform**, so your app does not list it.
 | [`compiled-model`](compiled-model/) | Put the compiler's own cache on the volume, so only the first worker ever pays to compile |
 | [`resumable-job`](resumable-job/) | Checkpoint to storage every worker can reach, so the next call picks the job up where the last one left it |
 | [`protein-folding`](protein-folding/) | Fold a sequence into a structure file, with the weights pinned to a revision so every worker loads the same ones |
+| [`transcription`](transcription/) | Take the audio as a URL instead of base64, chunk it, and set the token budget yourself because the default truncates a long chunk in silence |
 | [`render-farm`](render-farm/) | Run Blender in a container, with the system packages it needs and a request timeout only a container app can set |
 
 Each one's README carries its own deploy command and the calls for its own endpoints.
@@ -56,11 +57,14 @@ pytest run cannot import two of them.
 
 ## Adding one
 
-Drop in a directory with `model.py`, `test_model.py` and a `README.md`. The README is **what
-makes the example usable without leaving the repository**, so it carries the deploy command
-and a call for every endpoint.
+Drop in a directory with `model.py`, `test_model.py`, a `README.md` and a `runware.yaml`. The
+README is **what makes the example usable without leaving the repository**, so it carries the
+deploy command and a call for every endpoint. The `runware.yaml` holds the same deploy options
+the README passes as flags, so a client can offer the deploy without a person reading them
+first.
 
-`python3 check_examples.py` refuses an example that is missing any of them, and CI runs it.
+`python3 check_examples.py` refuses an example that is missing any of them, and CI runs it. It
+also refuses a `runware.yaml` that disagrees with the flags its README passes.
 
 ## What earns a place here
 
