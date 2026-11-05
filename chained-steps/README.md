@@ -6,7 +6,7 @@ models run in one worker, and the image between them never leaves the process.
 A managed inference API cannot give you this, because **the only thing that crosses a
 request boundary is a finished image**.
 
-## What it teaches
+## What the example teaches
 
 **Your intermediate never leaves the process.** The image you hand to the matte is
 the object the generator returned, so you do not encode it to PNG, upload it, queue
@@ -42,7 +42,7 @@ run.
 BiRefNet is MIT, so you deploy with no token and nothing here depends on who you
 are.
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy model.py \
@@ -54,7 +54,7 @@ runware serverless deploy model.py \
 The first deploy fetches both models into the volume. Later starts read them from
 it, so a cold start you measure in minutes becomes one you measure in seconds.
 
-## Calling it
+## Calling the app
 
 ```bash
 curl https://api.serverless.runware.ai/v1/apps/chained-steps/invoke-async/predict \
@@ -84,7 +84,7 @@ the gap between the first row and the second.
 The cut-out comes back as a PNG in **RGBA**, with alpha running the full range from
 fully transparent to fully opaque.
 
-## Testing it
+## Testing the app
 
 ```bash
 uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q

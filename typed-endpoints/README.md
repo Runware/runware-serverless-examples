@@ -7,7 +7,7 @@ publish almost none of it.
 The work here is small on purpose, reading an image's metadata, so the request and
 the response are the subject.
 
-## What it teaches
+## What the example teaches
 
 **Your return annotation is the response schema.** The build reads nothing else, so
 what you annotate is what your callers are told. Building the manifest for each of
@@ -52,7 +52,7 @@ wire format cannot be its return type has a seam to use. Know four things first:
 
 Return a model instead and you avoid all four, which is why this example does.
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy model.py --id typed-endpoints --gpu-type rtx-pro-6000
@@ -61,7 +61,7 @@ runware serverless deploy model.py --id typed-endpoints --gpu-type rtx-pro-6000
 No weights and no GPU work, so the hardware only has to exist. Every app is
 allocated a GPU, which is why one is named here at all.
 
-## Calling it
+## Calling the app
 
 The parameter is a model, so its fields sit under the parameter's own name:
 
@@ -97,7 +97,7 @@ back `202` with the task pending, because a sync invoke has a deadline of roughl
 `/v1/apps/typed-endpoints/tasks/{taskId}` for it. The next call answers `200` in
 **2 seconds**.
 
-## Testing it
+## Testing the app
 
 ```bash
 uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q

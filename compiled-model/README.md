@@ -6,7 +6,7 @@ volume so only the first worker pays to compile.
 It is a container example because the code path has no compiler, which is the
 first thing it teaches.
 
-## What it teaches
+## What the example teaches
 
 **`torch.compile` cannot run on a code app, because there is no compiler.**
 `torch.compile` hands its kernels to Triton, and Triton shells out to a C compiler
@@ -76,7 +76,7 @@ It also needs `--break-system-packages` to pip install at all, because this
 image's python is system managed and pip refuses without it. A container has one
 environment, so there is nothing else to install into.
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy --container ./compiled-model \
@@ -87,7 +87,7 @@ runware serverless deploy --container ./compiled-model \
 
 `--container` points at the directory, not at a file.
 
-## Calling it
+## Calling the app
 
 ```bash
 curl https://api.serverless.runware.ai/v1/apps/compiled-model/invoke-sync/classify \
@@ -123,7 +123,7 @@ a worker that has read the cache still needs one pass before it is quick.
 benefit, which is the better choice if you do not want to pay a 14 minute cold
 start even once.
 
-## Testing it
+## Testing the app
 
 There is nothing local to run, which is why this directory has no `test_model.py`:
 a container example is tested by running the container.

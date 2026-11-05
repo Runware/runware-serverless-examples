@@ -2,7 +2,7 @@
 
 Configuration and credentials on a worker, and what you can read back about each.
 
-## What it teaches
+## What the example teaches
 
 **A secret and a plain variable arrive the same way.** Both land in `os.environ`,
 and your code cannot tell them apart. `API_TOKEN` comes from a secret here and
@@ -42,7 +42,7 @@ and a staging credential without an edit. This app always reads `API_TOKEN`.
 **Nothing is declared in `requirements`.** Pydantic is already on your worker,
 because the platform's own libraries bring it.
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy model.py \
@@ -66,7 +66,7 @@ runware serverless secrets attach config-and-secrets DOCS_EXAMPLE_TOKEN --env-va
 `--value-file -` reads from stdin so the value never reaches the process list.
 Attaching rolls the live app, so the next call sees it.
 
-## Calling it
+## Calling the app
 
 ```bash
 curl https://api.serverless.runware.ai/v1/apps/config-and-secrets/invoke-sync/predict \
@@ -98,7 +98,7 @@ The first call answered in **56 seconds**, under the sync deadline, so there is 
 `202` to poll here. An app that declares no dependencies has a small image to pull,
 and the difference against an example carrying torch is minutes.
 
-## Testing it
+## Testing the app
 
 ```bash
 uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q

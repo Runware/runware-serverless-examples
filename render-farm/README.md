@@ -7,7 +7,7 @@ It is the case the container path is for: the app needs an environment more than
 it needs code. Blender links against system libraries, ships as a tarball with
 its own Python, and has a command line rather than an API.
 
-## What it teaches
+## What the example teaches
 
 **A container app is your server, so you can run the whole thing under Docker
 first.** The code path cannot be tested that way. Build it, run it, curl it, and
@@ -57,7 +57,7 @@ for frame in $(seq 1 48); do
 done; wait
 ```
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy --container ./render-farm \
@@ -72,7 +72,7 @@ the `Dockerfile` and the `container.yaml` beside whatever the Dockerfile copies.
 `--max-workers` defaults to 1, and for this app that defeats the point. Four
 workers render four frames at once.
 
-## Calling it
+## Calling the app
 
 ```bash
 curl https://api.serverless.runware.ai/v1/apps/render-farm/invoke-sync/render \
@@ -100,7 +100,7 @@ told which backend to use. The sample count barely moves the number: at this res
 dominated by scene setup rather than by sampling.
 
 
-## Testing it
+## Testing the app
 
 There is nothing local to run, which is why this directory has no `test_model.py`:
 a container example is tested by running the container. The `docker run` above is that test.

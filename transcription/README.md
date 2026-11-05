@@ -6,7 +6,7 @@ GPU, with the weights on a volume.
 The model is CC-BY-4.0 and ungated, so this deploys with **no token**. The
 attribution the license asks for falls on whoever deploys it.
 
-## What it teaches
+## What the example teaches
 
 **The audio arrives as a URL and the worker fetches it.** Every other example
 that takes media takes base64. An hour of speech is tens of megabytes inside a
@@ -66,7 +66,7 @@ Whisper is the one to reach for when you need a language outside Parakeet's 25.
 This app takes Parakeet because 0.6B keeps the cold start short and the spans
 come back without a second model.
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy model.py \
@@ -78,7 +78,7 @@ runware serverless deploy model.py \
 The weights are about 2.4GB. Mount the volume: a checkpoint captures the
 worker's filesystem, so an unmounted download is copied into every one.
 
-## Calling it
+## Calling the app
 
 Use `invoke-async` and poll. An hour of audio is not a synchronous request.
 
@@ -117,7 +117,7 @@ Thirty-six minutes of speech came back in forty seconds, and the fetch of a 20MB
 inside that figure. It is inside the warm figures too, where it is most of a request on a
 ten-second file.
 
-## Testing it
+## Testing the app
 
 ```bash
 uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q

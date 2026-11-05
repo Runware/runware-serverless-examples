@@ -5,7 +5,7 @@ text.
 
 `bge-small-en-v1.5` is MIT and ungated, so this deploys with **no token**.
 
-## What it teaches
+## What the example teaches
 
 **Batch inside your handler, because the platform will not do it for you.** A
 worker takes one task at a time. There is no setting that lets several requests
@@ -59,7 +59,7 @@ mistake as well as the wrong answer.
 and the caller decides where the vectors go. That keeps it stateless, so it
 scales out across workers.
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy model.py \
@@ -72,7 +72,7 @@ The model is 130MB, which is small enough that you might skip the volume. Mount 
 anyway: a checkpoint captures the worker's filesystem, so an unmounted download is
 copied into every one.
 
-## Calling it
+## Calling the app
 
 ```bash
 curl https://api.serverless.runware.ai/v1/apps/embeddings/invoke-sync \
@@ -101,7 +101,7 @@ The first call pays for the worker, the download and a warmup pass. A volume
 does not keep a worker warm, it makes a **restart** cheap, which is the gap
 between the second row and the third.
 
-## Testing it
+## Testing the app
 
 ```bash
 uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q

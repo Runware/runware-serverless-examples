@@ -6,7 +6,7 @@ same GPUs the models API runs on.
 ESMFold is MIT licensed and its weights are ungated, so this deploys with **no
 token**.
 
-## What it teaches
+## What the example teaches
 
 **Serverless exists for the GPU work the models API does not cover.** That API handles image, video, audio and text. A workload outside those four is
 what this path is for: you bring the weights, the platform brings the hardware.
@@ -44,7 +44,7 @@ and the warmup fold means no request is the one paying for either.
 A worker that dies quietly during startup leaves a task pending with no error, and
 the logs are the only place the reason can appear.
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy model.py \
@@ -53,7 +53,7 @@ runware serverless deploy model.py \
   --volume /weights
 ```
 
-## Calling it
+## Calling the app
 
 Use `invoke-async` and poll. A fold is tens of seconds, not milliseconds.
 
@@ -94,7 +94,7 @@ caller cannot wait.
 Length barely moves the warm number at these sizes, so the fold is mostly fixed
 cost until the sequence gets long enough for the quadratic term to show.
 
-## Testing it
+## Testing the app
 
 ```bash
 uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q

@@ -6,7 +6,7 @@ do.
 
 No weights, so a failure here is the world coming up, not a model.
 
-## What it teaches
+## What the example teaches
 
 **Every rank runs your handler, with the same request.** Only rank 0 is reachable
 from outside the sandbox, so it copies each invocation to its siblings and holds
@@ -35,7 +35,7 @@ single card has to hold the whole range.
 **Nothing in the file names a GPU count.** You set that with `--gpus-per-worker`,
 and the same file serves a world of one.
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy model.py \
@@ -55,7 +55,7 @@ through while the rollout did not: the build stayed `ready` and the app went to
 it before reading any of your own code, because a worker that was never scheduled
 ran none of it.
 
-## Calling it
+## Calling the app
 
 Call `world-view` first. It takes no payload and says whether the world came up at
 all, and on which cards:
@@ -102,7 +102,7 @@ result. `runware serverless apps workers multi-gpu`
 reports `pulling` while that happens, so you can see a long first call instead of
 guessing at it. The next call answers in **5 seconds**.
 
-## Testing it
+## Testing the app
 
 ```bash
 uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q

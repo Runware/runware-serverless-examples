@@ -10,13 +10,13 @@ endpoints that genuinely need different GPUs are two apps.**
 Neither loads weights, and the pixels are a fixed 1x1 PNG standing in for the real thing, so
 **this runs anywhere**.
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy model.py --id image-tools --gpu-type rtx-pro-6000
 ```
 
-## Calling it
+## Calling the app
 
 Both endpoints are on the same app, so **only the last segment of the path changes**.
 
@@ -32,7 +32,7 @@ curl https://api.serverless.runware.ai/v1/apps/image-tools/invoke-async/generate
 omitted optional field **arrives as an explicit null** rather than as a missing key, which is
 why each handler applies its default a second time.
 
-## Testing it
+## Testing the app
 
 ```bash
 uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest

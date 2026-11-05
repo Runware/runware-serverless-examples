@@ -5,7 +5,7 @@ fetch them again.
 
 Z-Image Turbo is Apache 2.0 and ungated, so you deploy it with **no token**.
 
-## What it teaches
+## What the example teaches
 
 **Import your heavy dependencies inside `load`, not at the top of the file.** The
 build imports your file to find your endpoints, and it does that without your
@@ -33,7 +33,7 @@ second start reads from it.
 **Nothing in `model.py` names hardware.** You choose the GPU when you deploy, so
 the same file runs on whatever you give it.
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy model.py \
@@ -48,7 +48,7 @@ from it.
 Deploying again over a running app builds the new version first and keeps serving
 the old one until it is ready, so a deploy is not an outage.
 
-## Calling it
+## Calling the app
 
 The parameter is a model, so its fields sit under the parameter's own name.
 
@@ -75,7 +75,7 @@ Measured on an RTX PRO 6000, three different things:
 The volume does not keep a worker warm. It makes a **restart** cheap, which is
 the gap between the first row and the second.
 
-## Testing it
+## Testing the app
 
 ```bash
 uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q

@@ -9,7 +9,7 @@ deploy this app. It is the smallest thing that needs a real image on both sides,
 the image can be the whole subject. Every app gets a GPU because `--gpu-type` is
 required to create one, and this example leaves it idle.
 
-## What it teaches
+## What the example teaches
 
 **The annotation decodes the image for you.** `Base64RGBImage` and
 `Base64RGBAImage` turn the base64 string your caller sent into a `PIL.Image` before
@@ -52,13 +52,13 @@ means your app behaves the same wherever it runs. Nothing in `model.py` imports
 Pillow, because all it does with the library is call methods on the images the
 annotations handed it.
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy model.py --id watermark --gpu-type rtx-pro-6000
 ```
 
-## Calling it
+## Calling the app
 
 ```bash
 curl https://api.serverless.runware.ai/v1/apps/watermark/invoke-sync/predict \
@@ -82,7 +82,7 @@ seconds and the worker is still starting. Poll
 `/v1/apps/watermark/tasks/{taskId}` for it. The next call answers `200` in
 **2 seconds**.
 
-## Testing it
+## Testing the app
 
 ```bash
 uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q

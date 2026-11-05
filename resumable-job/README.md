@@ -7,7 +7,7 @@ again.
 The training loop here is a small stand-in. What the example is about is the
 checkpoint and where it goes.
 
-## What it teaches
+## What the example teaches
 
 **A code app is not cut off by a request timeout, but it still cannot run for
 hours.** `requestTimeoutSecs` applies to container apps only. A code app
@@ -48,7 +48,7 @@ where a job got to without a dashboard.
 slice loses more work on each failure, a smaller one pays the fixed per-call
 overhead more often.
 
-## Deploying it
+## Deploying the app
 
 It needs credentials for any S3-compatible store, so the secrets come first. One
 secret holds one value, and `--value-file -` reads it from stdin so it never
@@ -89,7 +89,7 @@ runware serverless deploy model.py --id resumable-job --gpu-type rtx-pro-6000 \
   --env-var S3_REGION=auto
 ```
 
-## Calling it
+## Calling the app
 
 Call it once to start:
 
@@ -134,7 +134,7 @@ wrong and silent when you do.
 A sixth call under a new job name came back at `resumed_from: 0` with a loss of
 0.0444, exactly the first call's, which is what a fresh start should look like.
 
-## Testing it
+## Testing the app
 
 ```bash
 uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q

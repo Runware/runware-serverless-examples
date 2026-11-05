@@ -4,7 +4,7 @@ Chat completions from your own weights, with a request shape you decide.
 
 Qwen3 4B Instruct is Apache 2.0 and ungated, so you deploy it with **no token**.
 
-## What it teaches
+## What the example teaches
 
 **A language model is weights and a handler.** Nothing about it is special to the
 platform. You load it in `load`, you keep it on a volume, and you answer requests
@@ -31,7 +31,7 @@ A server built for that work brings **its own HTTP server**, which makes it a
 container deploy instead of this one. Start here, and move when you can see the
 queue.
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy model.py \
@@ -40,7 +40,7 @@ runware serverless deploy model.py \
   --volume /weights
 ```
 
-## Calling it
+## Calling the app
 
 ```bash
 curl https://api.serverless.runware.ai/v1/apps/chat-endpoint/invoke-sync/predict \
@@ -66,7 +66,7 @@ Measured on an RTX PRO 6000, three different things:
 The volume does not keep a worker warm. It makes a **restart** cheap, which is
 the gap between the first row and the second.
 
-## Testing it
+## Testing the app
 
 ```bash
 uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest -q

@@ -7,13 +7,13 @@ failing and you need to know which side the problem is on.
 Two endpoints. `echo` hands the message back with its length, and `reverse_message` reverses
 it and can repeat the result.
 
-## Deploying it
+## Deploying the app
 
 ```bash
 runware serverless deploy model.py --id echo-app --gpu-type rtx-pro-6000
 ```
 
-## Calling it
+## Calling the app
 
 A handler answers on **the app id and its own name**, and the body is an envelope whose
 `payload` holds the handler's arguments.
@@ -35,7 +35,7 @@ curl https://api.serverless.runware.ai/v1/apps/echo-app/invoke-sync/reverse-mess
   -d '{"taskId": "1b4e28ba-2fa1-11d2-883f-0016d3cca427", "payload": {"message": "hello", "repeat": 2}}'
 ```
 
-## Testing it
+## Testing the app
 
 ```bash
 uv run --no-project --with pytest --with 'runware-serverless[schema]' pytest
