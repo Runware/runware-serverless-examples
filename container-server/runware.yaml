@@ -1,0 +1,8 @@
+configVersion: 1
+id: container-server
+source:
+  type: container
+compute:
+  gpuType: rtx-pro-6000
+volumes:
+  - /weights

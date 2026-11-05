@@ -1,0 +1,31 @@
+configVersion: 1
+
+# The --port the entrypoint passes to `vllm serve`.
+port: 8080
+
+# Readiness and liveness are separate routes, and under the platform's serving
+# layer they are two different servers. /health answers once a server that can
+# take requests is up, /live reports the process.
+probes:
+  readiness: /health
+  liveness: /live
+
+timeouts:
+  requestSeconds: 300
+  # The first boot pulls the weights into the volume. Later boots read them back.
+  startupSeconds: 1200
+
+# vLLM's own route, written out, so nothing in the image translates the request.
+endpoints:
+  - path: v1/chat/completions
+    input:
+      type: object
+      additionalProperties: false
+      required: [messages]
+      properties:
+        model: { type: string }
+        messages: { type: array }
+        max_tokens: { type: integer }
+        temperature: { type: number }
+        top_p: { type: number }
+        seed: { type: integer }

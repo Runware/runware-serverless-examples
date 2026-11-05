@@ -37,6 +37,7 @@ is **installed by the platform**, so your app does not list it.
 | [`protein-folding`](protein-folding/) | Fold a sequence into a structure file, with the weights pinned to a revision so every worker loads the same ones |
 | [`transcription`](transcription/) | Take the audio as a URL instead of base64, chunk it, and set the token budget yourself because the default truncates a long chunk in silence |
 | [`render-farm`](render-farm/) | Run Blender in a container, with the system packages it needs and a request timeout only a container app can set |
+| [`container-server`](container-server/) | Deploy a published image as it is, and let the platform recognize the server inside it and attach its own serving layer |
 
 Each one's README carries its own deploy command and the calls for its own endpoints.
 
