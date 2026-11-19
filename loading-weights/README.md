@@ -7,10 +7,13 @@ Z-Image Turbo is Apache 2.0 and ungated, so you deploy it with **no token**.
 
 ## What the example teaches
 
-**Import your heavy dependencies inside `load`, not at the top of the file.** The
-build imports your file to find your endpoints, and it does that without your
-requirements installed, so a module-level `import torch` fails the build. Inside
-`load` it runs in the worker, where torch is there.
+**Keep your heavy dependencies out of a plain module-level import.** The build
+imports your file to find your endpoints, and it does that without your
+requirements installed, so `import torch` at the top of the file fails the build.
+This example imports it inside `load`, which runs in the worker where torch is
+there, and is all a name one method uses needs. A name that has to be visible
+outside a method, such as a type in an annotation, goes in a `with imports():`
+block at the top of the file instead.
 
 **`load` is retried when the GPU is out of memory at startup**, waiting for a
 larger allocation each time. The retry re-instantiates your class, so both
