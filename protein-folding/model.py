@@ -71,7 +71,8 @@ class ProteinFolding:
 
         # Here and not at the top of the file. The build imports this file with the
         # platform's own dependencies, not yours, so nothing in requirements exists
-        # until a worker runs.
+        # until a worker runs. A `with imports():` block at the top of the file does
+        # the same, and is what to use when a name has to be visible outside a method.
         import torch
         from transformers import AutoTokenizer, EsmForProteinFolding
 

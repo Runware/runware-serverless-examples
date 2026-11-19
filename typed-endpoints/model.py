@@ -8,7 +8,14 @@ from enum import Enum
 
 from pydantic import BaseModel, Field
 
-from runware_serverless import endpoint, serve
+from runware_serverless import endpoint, imports, serve
+
+# At the top of the file rather than inside the handler, which also works. The
+# build imports this file with the platform's own dependencies, not yours, and
+# suppresses whatever this block raises, so the name is bound where a handler
+# or an annotation can reach it.
+with imports():
+    from PIL import Image
 
 MAX_PALETTE = 8
 
@@ -52,11 +59,6 @@ class TypedEndpoints:
 
     @endpoint
     def describe(self, source: Source) -> Report:
-        # Here rather than at the top of the file. The build imports this file
-        # with the platform's own dependencies, not the app's, so nothing in
-        # requirements exists until a worker runs.
-        from PIL import Image
-
         raw = base64.b64decode(source.image, validate=True)
         with Image.open(io.BytesIO(raw)) as image:
             width, height = image.size
