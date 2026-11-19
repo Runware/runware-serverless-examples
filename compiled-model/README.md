@@ -24,7 +24,7 @@ at runtime. A code worker has none. Measured from inside one with
 A code app that compiles anyway crash-loops: the container exits with code 3 on
 every attempt, and **the task stays pending with no error** while `apps errors`
 shows nothing. The reason only appears in `apps logs`, inside a Triton traceback:
-`Failed to find C compiler`. That is [RUNSERV-1568](https://runware.atlassian.net/browse/RUNSERV-1568).
+`Failed to find C compiler`.
 
 So the image is a `-devel` one, which ships the toolchain. **A dependency you
 cannot install any other way is the clearest reason to choose the container
