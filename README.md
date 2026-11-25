@@ -22,23 +22,23 @@ is **installed by the platform**, so your app does not list it.
 
 | Example | What it teaches |
 | --- | --- |
-| [`echo`](echo/) | Deploy two endpoints with nothing to load, to prove the platform end to end or rule it out when your own app fails |
-| [`image-tools`](image-tools/) | Put two endpoints with different request shapes in one app, which gives both the same GPU, queue and workers |
-| [`loading-weights`](loading-weights/) | Load a real model on a GPU: where the imports go, how to declare dependencies, and why weights belong on a volume |
-| [`typed-endpoints`](typed-endpoints/) | Describe your API with Pydantic so callers see every field, and so defaults reach your handler instead of nulls |
-| [`watermark`](watermark/) | Accept an image and return one, with the annotations that decode base64 into pixels before your handler runs |
-| [`multi-gpu`](multi-gpu/) | Run a worker across several cards, where every rank executes your handler and only the first one answers |
-| [`config-and-secrets`](config-and-secrets/) | Read configuration and credentials on a worker, where variables and secrets share one namespace and only a variable can be read back |
-| [`chained-steps`](chained-steps/) | Run two models in one request so the image between them never leaves the worker |
-| [`chat-endpoint`](chat-endpoint/) | Serve chat completions from your own weights, with a request shape you define |
-| [`embeddings`](embeddings/) | Embed a list of texts in one request, because a worker takes one task at a time and 256 texts take about as long as one |
-| [`compiled-model`](compiled-model/) | Put the compiler's own cache on the volume, so only the first worker ever pays to compile |
-| [`resumable-job`](resumable-job/) | Checkpoint to storage every worker can reach, so the next call picks the job up where the last one left it |
-| [`protein-folding`](protein-folding/) | Fold a sequence into a structure file, with the weights pinned to a revision so every worker loads the same ones |
-| [`transcription`](transcription/) | Take the audio as a URL instead of base64, chunk it, and set the token budget yourself because the default truncates a long chunk in silence |
-| [`render-farm`](render-farm/) | Run Blender in a container, with the system packages it needs and a request timeout only a container app can set |
-| [`container-server`](container-server/) | Deploy a published image as it is, and let the platform recognize the server inside it and attach its own serving layer |
-| [`comfyui-workflow`](comfyui-workflow/) | Run ComfyUI headless behind your own server, with the workflow as the request and the weights on a volume |
+| [`echo`](echo/) | Deploy an app that loads nothing, to test the platform end to end or tell whether a failure comes from your model |
+| [`image-tools`](image-tools/) | Serve two endpoints with different request schemas from one app, each routed by its path |
+| [`loading-weights`](loading-weights/) | Run a text-to-image model on a GPU and keep its weights on a volume across restarts |
+| [`typed-endpoints`](typed-endpoints/) | Type your handler parameters with Pydantic models and see the request schema the platform builds from them |
+| [`watermark`](watermark/) | Accept an image and return one, letting the package's annotations decode the base64 before your handler runs |
+| [`multi-gpu`](multi-gpu/) | Run one worker across several GPUs, with one serving process per GPU calling your handler |
+| [`config-and-secrets`](config-and-secrets/) | Pass configuration and credentials to a worker as environment variables, and check which ones arrived |
+| [`chained-steps`](chained-steps/) | Generate a product shot and cut it out of its background in one call, with both models on one worker |
+| [`chat-endpoint`](chat-endpoint/) | Serve chat completions from Qwen3 4B Instruct and decide the request shape yourself |
+| [`embeddings`](embeddings/) | Embed a list of texts in one request and get back one vector per text, in the order you sent them |
+| [`compiled-model`](compiled-model/) | Compile an image classifier with torch.compile and keep the compiler's cache on a volume for later workers |
+| [`resumable-job`](resumable-job/) | Split a long job into short calls that resume from the checkpoint the previous call saved |
+| [`protein-folding`](protein-folding/) | Predict a protein's structure from its sequence with ESMFold and get it back as a PDB file |
+| [`transcription`](transcription/) | Transcribe an audio file from a URL with Parakeet TDT 0.6B v3, and get the text with a start and end for each word |
+| [`render-farm`](render-farm/) | Render a Blender frame on a GPU from a container that installs Blender and the system libraries it needs |
+| [`container-server`](container-server/) | Deploy the vLLM image its maintainers publish, unchanged, and let the platform serve it with NVIDIA Dynamo |
+| [`comfyui-workflow`](comfyui-workflow/) | Run ComfyUI headless and call it with a prompt or with a whole workflow exported from your own ComfyUI |
 
 Each one's README carries its own deploy command and the calls for its own endpoints.
 
