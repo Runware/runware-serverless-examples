@@ -22,16 +22,16 @@ is **installed by the platform**, so your app does not list it.
 
 | Example | What it teaches |
 | --- | --- |
-| [`echo`](echo/) | The smallest app that runs: two endpoints, no weights, no GPU work. Deploy it to check the platform end to end |
-| [`image-tools`](image-tools/) | Two endpoints with different request shapes in one app, and where the GPU choice actually lives |
+| [`echo`](echo/) | Deploy two endpoints with nothing to load, to prove the platform end to end or rule it out when your own app fails |
+| [`image-tools`](image-tools/) | Put two endpoints with different request shapes in one app, which gives both the same GPU, queue and workers |
 | [`loading-weights`](loading-weights/) | Load a real model on a GPU: where the imports go, how to declare dependencies, and why weights belong on a volume |
 | [`typed-endpoints`](typed-endpoints/) | Describe your API with Pydantic so callers see every field, and so defaults reach your handler instead of nulls |
 | [`watermark`](watermark/) | Accept an image and return one, with the annotations that decode base64 into pixels before your handler runs |
 | [`multi-gpu`](multi-gpu/) | Run a worker across several cards, where every rank executes your handler and only the first one answers |
-| [`config-and-secrets`](config-and-secrets/) | Read configuration and credentials on a worker, and what the platform will and will not give you back |
+| [`config-and-secrets`](config-and-secrets/) | Read configuration and credentials on a worker, where variables and secrets share one namespace and only a variable can be read back |
 | [`chained-steps`](chained-steps/) | Run two models in one request so the image between them never leaves the worker |
 | [`chat-endpoint`](chat-endpoint/) | Serve chat completions from your own weights, with a request shape you define |
-| [`embeddings`](embeddings/) | Embed many texts in one request, and batch them inside your handler because the platform will not do it for you |
+| [`embeddings`](embeddings/) | Embed a list of texts in one request, because a worker takes one task at a time and 256 texts take about as long as one |
 | [`compiled-model`](compiled-model/) | Put the compiler's own cache on the volume, so only the first worker ever pays to compile |
 | [`resumable-job`](resumable-job/) | Checkpoint to storage every worker can reach, so the next call picks the job up where the last one left it |
 | [`protein-folding`](protein-folding/) | Fold a sequence into a structure file, with the weights pinned to a revision so every worker loads the same ones |

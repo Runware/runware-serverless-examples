@@ -7,10 +7,9 @@ text.
 
 ## What the example teaches
 
-**Batch inside your handler, because the platform will not do it for you.** A
-worker takes one task at a time. There is no setting that lets several requests
-share a worker, so the only batching available to you is the batching you put
-inside one request. That is why the request takes a list rather than a string.
+A worker **takes one task at a time**. There is no setting that lets several
+requests share a worker, so **the only batching available to you** is the batching
+you put inside one request. That is why the request takes a list rather than a string.
 
 What that buys, measured on an RTX PRO 6000 against a warm worker:
 
