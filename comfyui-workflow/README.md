@@ -16,12 +16,12 @@ server as a `POST` to an endpoint you declare, so there is no way to serve Comfy
 page or its websocket. Build the workflow in a ComfyUI on your own machine, then save
 it with **Export (API)** from ComfyUI's menu. That file is what this app runs.
 
-**ComfyUI returns a prompt id, and the platform waits for a result.** `POST /prompt`
+ComfyUI **returns a prompt id**, and the platform **waits for a result**. `POST /prompt`
 returns at once and runs the workflow from ComfyUI's own queue. `server.py` waits for
 that id to appear in `/history`, reads the saved images from ComfyUI's output folder
 and returns them in its response, then deletes both the files and the history entry.
 
-**ComfyUI reuses the output of a node whose inputs have not changed.** That is what
+ComfyUI **reuses the output of a node** whose inputs have not changed. That is what
 keeps the models loaded between requests. A save node it reuses writes no file, and
 its history entry lists the file of the earlier request, which `server.py` has already
 deleted. So `server.py` gives every node with a `filename_prefix` input **the
@@ -70,7 +70,7 @@ The node ids in `workflow.json` are **names where an export has numbers**. Comfy
 accepts names as ids, and `server.py` finds the three nodes it fills by name:
 `prompt`, `sampler` and `latent`.
 
-**A custom node is installed when the image builds.** Download it into
+A custom node is **installed when the image builds**. Download it into
 `/opt/ComfyUI/custom_nodes` at a pinned commit, the way the Dockerfile downloads
 ComfyUI itself, and install its requirements. The Dockerfile then runs
 `main.py --quick-test-for-ci`, which **imports every node and exits**, so a node that
@@ -115,8 +115,8 @@ curl https://api.serverless.runware.ai/v1/apps/comfyui-workflow/invoke-sync/gene
   -d '{"taskId": "7c9e6679-7425-40de-944b-e07fc1f90ae7", "payload": {"prompt": "A pair of white running shoes on a concrete step in early morning light, product photo, shallow depth of field", "seed": 42}}'
 ```
 
-The images come back at `output.images`, each a base64 PNG. **A container app has no
-`predictions` wrapper**: `output` is your server's response body as it was. `seed` is
+The images come back at `output.images`, each a base64 PNG. A container app's output
+is **your server's response body as it was**, with no `predictions` wrapper. `seed` is
 the one the image was made with, so you can **send it back for the same image** when
 you left it out. The same seed and values gave the same pixels on two workers on
 different nodes.
