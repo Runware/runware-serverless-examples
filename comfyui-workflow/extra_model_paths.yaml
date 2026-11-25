@@ -1,0 +1,8 @@
+# ComfyUI reads this file from its own directory when it starts. It adds the
+# volume to the folders ComfyUI looks in for models, at the layout server.py
+# downloads the weights into.
+z_image_turbo:
+  base_path: /weights/Comfy-Org/Z-Image-Turbo/split_files
+  diffusion_models: diffusion_models
+  text_encoders: text_encoders
+  vae: vae

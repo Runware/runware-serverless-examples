@@ -1,0 +1,70 @@
+configVersion: 2
+port: 8080
+probes:
+  readiness: /ready
+  liveness: /health
+timeouts:
+  requestSeconds: 600
+  startupSeconds: 2400
+endpoints:
+  - path: generate
+    default: true
+    input:
+      type: object
+      additionalProperties: false
+      required: [prompt]
+      properties:
+        prompt:
+          type: string
+          description: What to draw. Z-Image Turbo reads a long, complete description best.
+        seed:
+          type: integer
+          minimum: 0
+          description: The same seed and values give the same image. A random one when left out.
+        width:
+          type: integer
+          minimum: 256
+          maximum: 2048
+          description: In pixels, a multiple of 16. Defaults to 1024.
+        height:
+          type: integer
+          minimum: 256
+          maximum: 2048
+          description: In pixels, a multiple of 16. Defaults to 1024.
+        steps:
+          type: integer
+          minimum: 1
+          maximum: 50
+          description: Sampling steps. The model is distilled for 8, the default.
+    output:
+      type: object
+      properties:
+        images:
+          type: array
+          description: The images the workflow saved, each a base64 PNG.
+          items:
+            type: string
+        seed:
+          type: integer
+        seconds:
+          type: number
+          description: How long ComfyUI took, from queueing the workflow to the last image.
+  - path: workflow
+    input:
+      type: object
+      additionalProperties: false
+      required: [workflow]
+      properties:
+        workflow:
+          type: object
+          description: A workflow in ComfyUI's API format, using the nodes and models this image holds.
+    output:
+      type: object
+      properties:
+        images:
+          type: array
+          description: The images every output node saved, each a base64 PNG.
+          items:
+            type: string
+        seconds:
+          type: number
