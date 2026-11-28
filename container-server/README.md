@@ -23,7 +23,7 @@ image's own vLLM and puts its launcher first on `PATH` as `vllm`, so the `vllm s
 your `CMD` starts a Dynamo worker and a Dynamo frontend on the port you named. Your image
 is not modified and its packages are not touched.
 
-**That path accepts one range of vLLM releases.** It is 0.28.x today. A vLLM outside it
+**That path accepts one range of vLLM releases.** It is 0.28.x, 0.31.x and 0.33.x today. A vLLM outside it
 fails the build with the reason in the log rather than starting and faulting later, and
 an image of vLLM-Omni, which is a different server carrying the same label, is built as
 you wrote it.

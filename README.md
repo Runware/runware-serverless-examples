@@ -38,6 +38,7 @@ is **installed by the platform**, so your app does not list it.
 | [`transcription`](transcription/) | Transcribe an audio file from a URL with Parakeet TDT 0.6B v3, and get the text with a start and end for each word |
 | [`render-farm`](render-farm/) | Render a Blender frame on a GPU from a container that installs Blender and the system libraries it needs |
 | [`container-server`](container-server/) | Deploy the vLLM image its maintainers publish, unchanged, and let the platform serve it with NVIDIA Dynamo |
+| [`sglang-server`](sglang-server/) | Deploy the SGLang image its maintainers publish, and let the endpoints you declare settle that it is serving a language model |
 | [`comfyui-workflow`](comfyui-workflow/) | Run ComfyUI headless and call it with a prompt or with a whole workflow exported from your own ComfyUI |
 
 Each one's README carries its own deploy command and the calls for its own endpoints.

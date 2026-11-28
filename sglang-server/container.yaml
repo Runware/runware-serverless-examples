@@ -1,0 +1,34 @@
+configVersion: 1
+
+# The --port the entrypoint passes to `sglang serve`.
+port: 30000
+
+# Readiness and liveness are separate routes, and under the platform's serving
+# layer they are two different servers. /health answers once a server that can
+# take requests is up, /live reports the process.
+probes:
+  readiness: /health
+  liveness: /live
+
+timeouts:
+  requestSeconds: 300
+  # The first boot pulls the weights into the volume. Later boots read them back.
+  startupSeconds: 1200
+
+# Every endpoint here is a language model's, and that is what tells the platform
+# this image serves a language model rather than diffusion. The same image serves
+# both, so declaring an image or a video route instead leaves it to run as written,
+# with no serving layer attached.
+endpoints:
+  - path: v1/chat/completions
+    input:
+      type: object
+      additionalProperties: false
+      required: [messages]
+      properties:
+        model: { type: string }
+        messages: { type: array }
+        max_tokens: { type: integer }
+        temperature: { type: number }
+        top_p: { type: number }
+        seed: { type: integer }
