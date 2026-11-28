@@ -31,8 +31,8 @@ in the log rather than starting and faulting later. That is stricter than the vL
 which serves whole minor lines.
 
 **`--enable-memory-saver` is added for you.** What it allocates is the only memory the
-platform can move off the card between calls and bring back at the same addresses, which
-is what lets the app scale to zero and come back warm. `--enable-metrics` arrives with it,
+platform can move off the card between calls and bring back at the same addresses, so the
+app scales to zero and comes back warm. `--enable-metrics` arrives with it,
 for the engine's own numbers.
 
 **Your `--max-running-requests` is read, not replaced.** It is both SGLang's own limit on

@@ -23,14 +23,15 @@ image's own vLLM and puts its launcher first on `PATH` as `vllm`, so the `vllm s
 your `CMD` starts a Dynamo worker and a Dynamo frontend on the port you named. Your image
 is not modified and its packages are not touched.
 
-**That path accepts one range of vLLM releases.** It is 0.28.x, 0.31.x and 0.33.x today. A vLLM outside it
-fails the build with the reason in the log rather than starting and faulting later, and
+**That path accepts the vLLM releases the platform serves.** They are 0.28.x, 0.31.x and
+0.33.x today. A vLLM outside them fails the build with the reason in the log rather than
+starting and faulting later, and
 an image of vLLM-Omni, which is a different server carrying the same label, is built as
 you wrote it.
 
-**Two flags are added for you.** `--enable-sleep-mode`, which is what lets the platform
-move the model off the card between calls and put it back at the same addresses, and
-`--max-num-seqs` when your app sets `MAX_CONCURRENCY`. A `--max-num-seqs` of your own is
+**Two flags are added for you.** `--enable-sleep-mode`, so the platform moves the model
+off the card between calls and puts it back at the same addresses, and `--max-num-seqs`
+when your app sets `MAX_CONCURRENCY`. A `--max-num-seqs` of your own is
 left alone.
 
 **An endpoint path can be several segments.** `path: v1/chat/completions` is both what
@@ -43,8 +44,8 @@ whatever got there first.
 
 **Readiness and liveness are separate routes you choose.** `/health` answers once a server
 that can take requests is up, and `/live` reports the process. Liveness is only checked
-after the startup probe has passed, which is what keeps a load of several minutes from
-being mistaken for a dead process.
+after the startup probe has passed. A load of several minutes then has time to finish
+before the platform judges the process.
 
 **What your server returns is the result.** A code app's answer arrives wrapped at
 `output.predictions[0]`, and a container app's does not.
